@@ -1,0 +1,42 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.user
+*.suo
+*.swp
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+secrets/
+
+# Logs / temporary
+*.log
+tmp/
+temp/
+.cache/
+
+# Build outputs (language-neutral common cases)
+bin/
+obj/
+build/
+dist/
+out/
+target/
+coverage/
+
+# Dependency caches
+node_modules/
+packages/
+
+# Test / generated artifacts
+TestResults/
+artifacts/
+.generated/
