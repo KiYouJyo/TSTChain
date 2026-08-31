@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.1:evidence",
+  "title": "TST Chain Evidence v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_id",
+    "evidence_type",
+    "content_digest",
+    "schema_version"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_system": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "source_uri": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "content_digest": {
+      "$ref": "#/$defs/contentDigest"
+    },
+    "captured_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "metadata_digest": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/contentDigest"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schema_version": {
+      "const": "0.1"
+    }
+  },
+  "$defs": {
+    "contentDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
