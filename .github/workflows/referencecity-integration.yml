@@ -1,0 +1,26 @@
+name: ReferenceCity Integration Profile
+
+on:
+  push:
+    paths:
+      - 'integrations/referencecity/**'
+      - 'docs/**/REFERENCECITY.md'
+      - 'tools/referencecity_integration_check.py'
+      - '.github/workflows/referencecity-integration.yml'
+  pull_request:
+    paths:
+      - 'integrations/referencecity/**'
+      - 'docs/**/REFERENCECITY.md'
+      - 'tools/referencecity_integration_check.py'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/referencecity_integration_check.py
+      - run: python tools/v0_1_conformance.py
+      - run: python tools/v0_2_conformance.py

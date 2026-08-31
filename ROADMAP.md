@@ -4,165 +4,95 @@
 
 本路线图以“**先协议与领域模型，后分布式实现；先可信规划基础设施，后智能应用**”为原则。版本号代表技术成熟度，不代表行政系统生产准入或法定效力。
 
-## v0.1 — Domain Foundation
+## v0.1 — Domain Foundation — 完成
 
-目标：建立最小、稳定、可测试的国土空间可信领域模型。
+已完成 SpatialObject、SpatialEvent、Evidence、`TST-C14N-JSON/0.1`、三语资源、Schema/versioning、测试向量与多 Python conformance。`TST-C14N-JSON/0.1` 仅适用于 TST 核心协议实例，不得作为通用 GeoJSON canonicalizer。
 
-- [x] `SpatialObject`：空间对象 ID、类型、层级/管辖域、外部数据与几何引用
-- [x] `SpatialEvent`：事件 ID、主体、对象、前后状态、时间、依据、证据引用
-- [x] `Evidence`：内容 Hash、时间戳、来源与外部 URI/对象存储引用
-- [x] Canonical serialization：`TST-C14N-JSON/0.1` 确定性序列化与 SHA-256 内容寻址
-- [x] 三语资源：`zh-CN` / `ja-JP` / `en-US`
-- [x] 核心术语表与稳定机器 key
-- [x] Schema versioning 与兼容策略
-- [x] Schema 校验、测试向量、等价输入测试与示例数据
+## v0.2 — Trust & Authority — 完成
 
-**验收标准**：同一 Spatial Event 在不同实现中可生成一致 canonical bytes 与一致 content hash；三语显示不改变协议字段。
+已完成 Actor / Authority、机构与人员、角色/权限/管辖范围、Ed25519 detached signature、Credential、`TST-AUTHZ/0.2`、密钥撤销/轮换、AuthorizationDecision、AuditRecord、稳定错误码和回归 CI。
 
-**v0.1 状态**：协议候选实现完成。`v0.1 Protocol Conformance` CI 在多 Python 版本环境复核 Schema、canonical bytes、SHA-256 测试向量和三语 key 一致性。
+## ReferenceCity 驱动的验收基线
 
-## v0.2 — Trust & Authority
+ReferenceCity protocol `0.1` / core `0.1.0` 现作为后续版本的跨阶段 benchmark。当前 v0.2 对 S001–S010 的能力覆盖为 **0 full / 3 partial / 7 unsupported**；这不是失败掩盖项，而是路线图优先级输入。详见 `integrations/referencecity/v0.1/capability-gap.json`。
 
-目标：让“谁有权做什么、谁签署了什么”成为可验证对象。
+### Canonicalization 边界
 
-- [x] `Actor` / `Authority` 数据模型
-- [x] 机构、人员、服务主体、角色、权限与管辖范围
-- [x] Ed25519 detached signature abstraction 与签名域分离
-- [x] `Credential` 与可信签发主体约束
-- [x] `TST-AUTHZ/0.2` reference authorization policy
-- [x] 签名验证、密钥撤销、有效期与 predecessor key rotation 模型
-- [x] `AuthorizationDecision` / `AuditRecord` 与稳定错误码规范
-- [x] 三语术语、合成示例、确定性签名与授权测试向量
-- [x] Python 3.11–3.13 CI，同时执行 v0.1 回归
+- TST 核心对象：`TST-C14N-JSON/0.1`；
+- ReferenceCity 外部 JSON/GIS 资产：保留其 `RFC8785-JCS` canonical SHA-256；
+- TST Evidence 记录外部 digest，不用 TST profile 重排 GeoJSON coordinates、scenario actions 等有序数组。
 
-**原则**：链不创造现实行政权力，只映射和验证现实制度中的授权关系。`Authority` 是数字权责声明，生产部署必须对应真实有效的法定、组织或委托依据。
+## v0.3 — Planning Rule — 下一阶段
 
-**验收标准**：同一 Credential / Authority 在不同实现中生成一致 canonical payload 与 SHA-256；Ed25519 测试签名可复现；撤销密钥必须被拒绝；授权策略能够稳定区分权限、时间、管辖范围、对象类型与可信 Credential 签发主体。
-
-**v0.2 状态**：协议候选实现完成。ReferenceCity 尚在建设时继续使用最小合成 fixture，不将外部测试数据仓库作为协议开发阻塞项。
-
-## v0.3 — Planning Rule
-
-目标：建立机器可读、可版本化、可追溯的规划规则模型。
+目标：优先解除 ReferenceCity **S006 / S007** 的规则模型阻塞，同时为其他规划业务建立可版本化规则基础。
 
 - [ ] `PlanningRule` 基础 Schema
-- [ ] 适用空间范围与对象范围
-- [ ] 数值指标、枚举条件、空间约束、引用依据
-- [ ] RuleSet 与版本关系
-- [ ] 生效、废止、替代与例外状态
-- [ ] Rule evaluation result schema
-- [ ] GIS/BIM 外部规则引擎接口
-
-**原则**：链负责证明规则版本、输入和结果；不替代依法应由行政主体作出的裁量。
+- [ ] RuleSet / version / effective / superseded 状态
+- [ ] target object type 与 jurisdiction/scope
+- [ ] 数值指标、枚举条件和外部空间约束 reference
+- [ ] `RuleEvaluationRequest` / `RuleEvaluationResult`
+- [ ] `external_content_canonicalization` / evidence profile 元数据
+- [ ] 明确链内规则证明与外部 GIS rule engine 的职责边界
+- [ ] ReferenceCity S006 rule-conflict mapping fixture
+- [ ] 为 S007 预留 external spatial evaluator result，不在链核心重写 GIS 几何引擎
+- [ ] v0.3 conformance + v0.1/v0.2 regression
 
 ## v0.4 — Provenance
 
-目标：形成规划版本链、调整链和上下级规划传导图。
+目标：解除 S001/S002/S009 的计划版本与历史证明阻塞。
 
 - [ ] `PlanArtifact` / `PlanVersion`
 - [ ] Amendment / Supersede / Derive 关系
-- [ ] 国家—省—市—县—详细规划的传导边
+- [ ] 上下级规划传导边
 - [ ] 指标分解与约束来源追溯
-- [ ] 反向影响查询
 - [ ] Provenance graph integrity validation
 
 ## v0.5 — Workflow
 
-目标：表达国土空间规划全生命周期业务状态，而不是模拟金融交易。
+目标：解除 S001/S002/S003/S006/S008/S010 的状态机与原子前置条件阻塞。
 
-- [ ] 编制
-- [ ] 审查
-- [ ] 审批
-- [ ] 用途管制 / 许可
-- [ ] 规划核实
-- [ ] 监测
-- [ ] 评估
-- [ ] 调整 / 更新
-- [ ] 可配置状态机与权限策略
+- [ ] 编制、提交、审查、审批、生效、调整
+- [ ] 可配置状态机与 Authority policy
+- [ ] required document/signature preconditions
+- [ ] optimistic concurrency / expected_version
+- [ ] idempotency / request-id reuse
+- [ ] 稳定 workflow error mapping
 
 ## v0.6 — Interoperability
 
-目标：建立“数据不上链，证据与关系上链”的标准适配层。
-
-优先接口：
+目标：解除 S007 的 GIS 外部空间评价阻塞，并建立“数据不上链，证据与关系上链”的标准适配层。
 
 - [ ] GIS / GeoJSON / GeoPackage adapter
-- [ ] TIM-compatible object mapping
-- [ ] CSPON event/data adapter
+- [ ] TIM / CSPON mapping
 - [ ] BIM / IFC reference adapter
-- [ ] Remote sensing evidence adapter
-- [ ] Document / PDF / archive evidence adapter
+- [ ] Remote sensing / document evidence adapter
 - [ ] REST / OpenAPI gateway
 
 ## v0.7 — Distributed Ledger Prototype
 
-目标：从单机可验证日志升级为多节点可信账本原型。
+目标：把 stateless conformance 升级为持久化多节点可信账本，使 ReferenceCity S001–S010 真正成为端到端链回归。
 
 - [ ] Append-only ledger
 - [ ] Merkle commitment
 - [ ] Authority-based validator set
-- [ ] Finality model
-- [ ] Node identity
-- [ ] Snapshot / checkpoint
-- [ ] State synchronization
-- [ ] Fault and recovery tests
-
-不引入可交易原生代币，不以挖矿或 Gas 作为业务前提。
+- [ ] Finality / node identity
+- [ ] Snapshot / checkpoint / state synchronization
+- [ ] atomic state transition + audit persistence
+- [ ] ReferenceCity adapter observed-result output
+- [ ] ReferenceCity S001–S010 evaluator run
 
 ## v0.8 — Hierarchical & Jurisdictional Scaling
 
-目标：验证国土空间治理层级下的弹性扩展模型。
-
-```text
-County / Domain Ledger
-        ↓ checkpoint
-City Trust Layer
-        ↓ checkpoint
-Province Trust Layer
-        ↓ checkpoint
-National Root / Federation Root
-```
-
-- [ ] Jurisdiction partitioning
-- [ ] Cross-domain event proof
-- [ ] Hierarchical checkpoint
-- [ ] Selective replication
-- [ ] Data residency policy hooks
-- [ ] 跨层级传导完整性验证
+County / Domain Ledger → City Trust Layer → Province Trust Layer → National/Federation Root：分区、跨域 proof、层级 checkpoint、selective replication、data-residency hooks。
 
 ## v0.9 — Knowledge Graph & Planning AI Foundation
 
-目标：把可信账本转化为可查询的国土空间知识基础。
-
-- [ ] Spatial knowledge graph projection
-- [ ] Object–Rule–Event–Authority graph
-- [ ] Provenance-aware query
-- [ ] AI/RAG evidence package
-- [ ] 可验证引用与来源链
-- [ ] 规划问答与规则解释原型
+Spatial knowledge graph、Object–Rule–Event–Authority graph、provenance query、AI/RAG evidence package、可验证引用与规划问答。
 
 ## v1.0 — Trusted Territorial Spatial Infrastructure
 
-目标：形成稳定的国土空间可信基础协议与参考实现。
-
-v1.0 至少应具备：
-
-- 稳定的核心 Schema 与兼容策略；
-- Spatial Object / Event / Rule / Authority / Provenance 五大核心模型；
-- 多语言资源与术语规范；
-- 可验证签名、Hash、时间与版本关系；
-- 可插拔存储与分布式账本实现；
-- GIS/TIM/CSPON/BIM 等适配接口；
-- 分层分域检查点原型；
-- 完整测试向量、示例数据、开发者文档与安全模型。
+稳定核心 Schema、Spatial Object / Event / Rule / Authority / Provenance、签名/Hash/版本、可插拔存储/账本、GIS/TIM/CSPON/BIM 适配、分层分域原型、完整测试与安全模型。
 
 ## 非主线路线
 
-以下能力可以作为实验性扩展，但不得反客为主：
-
-- NFT / unique tokenized object representation
-- 通用资产凭证
-- 公共参与式投票实验
-- P2P 资源或能源结算实验
-
-它们不得改变 TST Chain “国土空间规划可信数字基础设施”的核心定位。
+NFT / unique tokenized representation、通用资产凭证、公共参与式投票实验、P2P 资源/能源结算可以作为实验扩展，但不得改变国土空间可信基础设施主线。

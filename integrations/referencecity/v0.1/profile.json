@@ -1,0 +1,17 @@
+{
+  "integration_id": "tst-referencecity/0.1",
+  "referencecity_repository": "KiYouJyo/ReferenceCity",
+  "referencecity_protocol_version": "0.1",
+  "referencecity_core_dataset_version": "0.1.0",
+  "referencecity_crs": "RC-SYNTHETIC-1",
+  "tstchain_current_protocol": "0.2",
+  "canonicalization_boundary": {
+    "tst_core_profile": "TST-C14N-JSON/0.1",
+    "referencecity_external_content_profile": "RFC8785-JCS",
+    "rule": "Never canonicalize ReferenceCity GeoJSON, coordinates, scenario steps, or other external ordered JSON with TST-C14N-JSON/0.1. Preserve the source canonical digest as external evidence and canonicalize only TST protocol objects with the TST profile."
+  },
+  "ground_truth_policy": {
+    "adapter_input_contains_ground_truth": false,
+    "adapter_must_not_read_expected_directory": true
+  }
+}
