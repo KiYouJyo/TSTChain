@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.1:spatial-event",
+  "title": "TST Chain SpatialEvent v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "subject_object_id",
+    "event_type",
+    "new_state_hash",
+    "actor_id",
+    "timestamp",
+    "schema_version"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_object_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "previous_state_hash": {
+      "$ref": "#/$defs/nullableDigest"
+    },
+    "new_state_hash": {
+      "$ref": "#/$defs/contentDigest"
+    },
+    "actor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_id": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "basis_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "previous_event_hash": {
+      "$ref": "#/$defs/nullableDigest"
+    },
+    "signature": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["algorithm", "signer", "value"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "schema_version": {
+      "const": "0.1"
+    }
+  },
+  "$defs": {
+    "contentDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "nullableDigest": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/contentDigest"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}
