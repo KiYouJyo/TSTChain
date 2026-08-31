@@ -1,0 +1,21 @@
+{
+  "event_id": "tst:event:planning-state-recorded:demo-001",
+  "subject_object_id": "tst:object:parcel:330106-demo-001",
+  "event_type": "planning_state_recorded",
+  "previous_state_hash": null,
+  "new_state_hash": {
+    "algorithm": "sha256",
+    "digest": "1483704150853158161f43dee799b7dfc04bfabe2df4faa02df3e15f4dde1dae"
+  },
+  "actor_id": "tst:actor:demo-planning-office",
+  "basis_refs": [
+    "tst:basis:plan:demo-001",
+    "tst:basis:survey:demo-2026"
+  ],
+  "evidence_refs": [
+    "tst:evidence:planning-document:demo-001"
+  ],
+  "timestamp": "2026-09-01T00:01:00Z",
+  "previous_event_hash": null,
+  "schema_version": "0.1"
+}

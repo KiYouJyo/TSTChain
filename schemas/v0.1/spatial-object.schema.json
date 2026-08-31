@@ -13,19 +13,26 @@
   "properties": {
     "object_id": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^tst:object:[a-z0-9][a-z0-9._:-]{2,119}$"
     },
     "object_type": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
     },
     "jurisdiction": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
     },
     "parent_object_id": {
-      "type": ["string", "null"],
-      "minLength": 1
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^tst:object:[a-z0-9][a-z0-9._:-]{2,119}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "external_refs": {
       "type": "array",
@@ -43,15 +50,19 @@
     "externalRef": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["system", "external_id"],
+      "required": [
+        "system",
+        "external_id"
+      ],
       "properties": {
         "system": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
         },
         "external_id": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "maxLength": 256
         },
         "uri": {
           "type": "string",
@@ -65,15 +76,17 @@
     "contentDigest": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["algorithm", "digest"],
+      "required": [
+        "algorithm",
+        "digest"
+      ],
       "properties": {
         "algorithm": {
-          "type": "string",
-          "minLength": 1
+          "const": "sha256"
         },
         "digest": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[0-9a-f]{64}$"
         }
       }
     }

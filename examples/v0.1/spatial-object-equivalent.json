@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.1",
+  "external_refs": [
+    {
+      "external_id": "survey-demo-2026",
+      "system": "survey-dataset"
+    },
+    {
+      "uri": "https://example.invalid/reference-city/parcel-demo-001",
+      "external_id": "parcel-demo-001",
+      "system": "reference-city"
+    }
+  ],
+  "jurisdiction": "CN-33-01",
+  "object_type": "parcel",
+  "object_id": "tst:object:parcel:330106-demo-001"
+}

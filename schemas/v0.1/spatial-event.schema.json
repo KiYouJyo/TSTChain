@@ -16,15 +16,15 @@
   "properties": {
     "event_id": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^tst:event:[a-z0-9][a-z0-9._:-]{2,120}$"
     },
     "subject_object_id": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^tst:object:[a-z0-9][a-z0-9._:-]{2,119}$"
     },
     "event_type": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
     },
     "previous_state_hash": {
       "$ref": "#/$defs/nullableDigest"
@@ -34,17 +34,13 @@
     },
     "actor_id": {
       "type": "string",
-      "minLength": 1
-    },
-    "authority_id": {
-      "type": ["string", "null"],
-      "minLength": 1
+      "pattern": "^tst:actor:[a-z0-9][a-z0-9._:-]{2,121}$"
     },
     "basis_refs": {
       "type": "array",
       "items": {
         "type": "string",
-        "minLength": 1
+        "pattern": "^tst:[a-z0-9][a-z0-9._:-]{2,127}$"
       },
       "uniqueItems": true,
       "default": []
@@ -53,36 +49,18 @@
       "type": "array",
       "items": {
         "type": "string",
-        "minLength": 1
+        "pattern": "^tst:evidence:[a-z0-9][a-z0-9._:-]{2,117}$"
       },
       "uniqueItems": true,
       "default": []
     },
     "timestamp": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"
     },
     "previous_event_hash": {
       "$ref": "#/$defs/nullableDigest"
-    },
-    "signature": {
-      "type": ["object", "null"],
-      "additionalProperties": false,
-      "required": ["algorithm", "signer", "value"],
-      "properties": {
-        "algorithm": {
-          "type": "string",
-          "minLength": 1
-        },
-        "signer": {
-          "type": "string",
-          "minLength": 1
-        },
-        "value": {
-          "type": "string",
-          "minLength": 1
-        }
-      }
     },
     "schema_version": {
       "const": "0.1"
@@ -92,15 +70,17 @@
     "contentDigest": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["algorithm", "digest"],
+      "required": [
+        "algorithm",
+        "digest"
+      ],
       "properties": {
         "algorithm": {
-          "type": "string",
-          "minLength": 1
+          "const": "sha256"
         },
         "digest": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[0-9a-f]{64}$"
         }
       }
     },

@@ -1,0 +1,25 @@
+{
+  "profile": "TST-C14N-JSON/0.1",
+  "hash_algorithm": "sha256",
+  "vectors": [
+    {
+      "type": "SpatialObject",
+      "input": "examples/v0.1/spatial-object.json",
+      "equivalent_input": "examples/v0.1/spatial-object-equivalent.json",
+      "canonical_utf8": "{\"external_refs\":[{\"external_id\":\"parcel-demo-001\",\"system\":\"reference-city\",\"uri\":\"https://example.invalid/reference-city/parcel-demo-001\"},{\"external_id\":\"survey-demo-2026\",\"system\":\"survey-dataset\"}],\"jurisdiction\":\"CN-33-01\",\"object_id\":\"tst:object:parcel:330106-demo-001\",\"object_type\":\"parcel\",\"schema_version\":\"0.1\"}",
+      "sha256": "1483704150853158161f43dee799b7dfc04bfabe2df4faa02df3e15f4dde1dae"
+    },
+    {
+      "type": "Evidence",
+      "input": "examples/v0.1/evidence.json",
+      "canonical_utf8": "{\"captured_at\":\"2026-09-01T00:00:00Z\",\"content_digest\":{\"algorithm\":\"sha256\",\"digest\":\"1111111111111111111111111111111111111111111111111111111111111111\"},\"created_by\":\"tst:actor:demo-planning-office\",\"evidence_id\":\"tst:evidence:planning-document:demo-001\",\"evidence_type\":\"planning_document\",\"metadata_digest\":null,\"schema_version\":\"0.1\",\"source_system\":\"reference-city\",\"source_uri\":\"https://example.invalid/reference-city/plans/demo-001.pdf\"}",
+      "sha256": "e77c167614c5bb95303cc41267ffff93c402102ab9e4d22f06b94eca44e199b5"
+    },
+    {
+      "type": "SpatialEvent",
+      "input": "examples/v0.1/spatial-event.json",
+      "canonical_utf8": "{\"actor_id\":\"tst:actor:demo-planning-office\",\"basis_refs\":[\"tst:basis:plan:demo-001\",\"tst:basis:survey:demo-2026\"],\"event_id\":\"tst:event:planning-state-recorded:demo-001\",\"event_type\":\"planning_state_recorded\",\"evidence_refs\":[\"tst:evidence:planning-document:demo-001\"],\"new_state_hash\":{\"algorithm\":\"sha256\",\"digest\":\"1483704150853158161f43dee799b7dfc04bfabe2df4faa02df3e15f4dde1dae\"},\"previous_event_hash\":null,\"previous_state_hash\":null,\"schema_version\":\"0.1\",\"subject_object_id\":\"tst:object:parcel:330106-demo-001\",\"timestamp\":\"2026-09-01T00:01:00Z\"}",
+      "sha256": "338e139178485c6d7a4402b35a28c7ec3206d7de74555dc52b8e1e61c5a7eade"
+    }
+  ]
+}

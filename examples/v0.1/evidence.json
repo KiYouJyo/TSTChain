@@ -1,0 +1,14 @@
+{
+  "evidence_id": "tst:evidence:planning-document:demo-001",
+  "evidence_type": "planning_document",
+  "source_system": "reference-city",
+  "source_uri": "https://example.invalid/reference-city/plans/demo-001.pdf",
+  "content_digest": {
+    "algorithm": "sha256",
+    "digest": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "captured_at": "2026-09-01T00:00:00Z",
+  "created_by": "tst:actor:demo-planning-office",
+  "metadata_digest": null,
+  "schema_version": "0.1"
+}
