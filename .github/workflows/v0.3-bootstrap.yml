@@ -38,3 +38,5 @@ jobs:
           git add schemas/v0.3 examples/v0.3 test-vectors/v0.3 docs/*/PLANNING-RULE.md locales tools/v0_3_conformance.py
           git commit -m "feat(v0.3): implement planning rule protocol"
           git push origin HEAD:codex/v0.3-planning-rule
+
+# bootstrap-trigger: 2
