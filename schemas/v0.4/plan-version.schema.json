@@ -1,0 +1,20 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:tstchain:schema:v0.4:plan-version",
+  "title":"TST Chain PlanVersion v0.4",
+  "type":"object","additionalProperties":false,
+  "required":["plan_version_id","plan_artifact_id","version","content_digest","created_at","effective_from","status","previous_version_ref","evidence_refs","schema_version"],
+  "properties":{
+    "plan_version_id":{"type":"string","pattern":"^tst:plan-version:[A-Za-z0-9._~-]+$"},
+    "plan_artifact_id":{"type":"string","pattern":"^tst:plan:[A-Za-z0-9._~-]+$"},
+    "version":{"type":"string","pattern":"^[1-9][0-9]*$"},
+    "content_digest":{"type":"object","additionalProperties":false,"required":["algorithm","digest","canonicalization"],"properties":{"algorithm":{"const":"sha256"},"digest":{"type":"string","pattern":"^[0-9a-f]{64}$"},"canonicalization":{"type":"string","minLength":1}}},
+    "created_at":{"type":"string","format":"date-time","pattern":"Z$"},
+    "effective_from":{"anyOf":[{"type":"string","format":"date-time","pattern":"Z$"},{"type":"null"}]},
+    "effective_until":{"anyOf":[{"type":"string","format":"date-time","pattern":"Z$"},{"type":"null"}]},
+    "status":{"enum":["draft","submitted","reviewed","approved","effective","superseded","withdrawn","rejected"]},
+    "previous_version_ref":{"anyOf":[{"type":"string","pattern":"^tst:plan-version:[A-Za-z0-9._~-]+$"},{"type":"null"}]},
+    "evidence_refs":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "schema_version":{"const":"0.4"}
+  }
+}

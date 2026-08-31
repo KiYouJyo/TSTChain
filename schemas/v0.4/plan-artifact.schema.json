@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:tstchain:schema:v0.4:plan-artifact",
+  "title":"TST Chain PlanArtifact v0.4",
+  "type":"object","additionalProperties":false,
+  "required":["plan_artifact_id","plan_type","jurisdiction_ref","external_artifact_ref","current_version_ref","status","schema_version"],
+  "properties":{
+    "plan_artifact_id":{"type":"string","pattern":"^tst:plan:[A-Za-z0-9._~-]+$"},
+    "plan_type":{"enum":["territorial_spatial_master","detailed","special","village","other"]},
+    "jurisdiction_ref":{"type":"string","minLength":1},
+    "external_artifact_ref":{"type":"string","minLength":1},
+    "current_version_ref":{"anyOf":[{"type":"string","pattern":"^tst:plan-version:[A-Za-z0-9._~-]+$"},{"type":"null"}]},
+    "status":{"enum":["active","superseded","archived"]},
+    "schema_version":{"const":"0.4"}
+  }
+}

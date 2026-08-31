@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:tstchain:schema:v0.4:provenance-edge",
+  "title":"TST Chain ProvenanceEdge v0.4",
+  "type":"object","additionalProperties":false,
+  "required":["edge_id","relation","from_ref","to_ref","basis_refs","created_at","actor_ref","schema_version"],
+  "properties":{
+    "edge_id":{"type":"string","pattern":"^tst:provenance-edge:[A-Za-z0-9._~-]+$"},
+    "relation":{"enum":["amends","supersedes","derives_from","transmits_from","implements","depends_on"]},
+    "from_ref":{"type":"string","minLength":1},
+    "to_ref":{"type":"string","minLength":1},
+    "basis_refs":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "created_at":{"type":"string","format":"date-time","pattern":"Z$"},
+    "actor_ref":{"type":"string","minLength":1},
+    "schema_version":{"const":"0.4"}
+  }
+}

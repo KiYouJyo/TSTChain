@@ -1,0 +1,22 @@
+name: v0.4 Provenance Conformance
+on:
+  push:
+    paths: ['schemas/v0.4/**','examples/v0.4/**','tools/v0_4_conformance.py','tools/v0_3_conformance.py','integrations/referencecity/**','.github/workflows/v0.4-conformance.yml']
+  pull_request:
+    paths: ['schemas/v0.4/**','examples/v0.4/**','tools/v0_4_conformance.py','integrations/referencecity/**']
+jobs:
+  conformance:
+    strategy:
+      matrix:
+        python-version: ['3.11','3.12','3.13']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python-version }}'}
+      - run: pip install -r requirements-dev.txt
+      - run: python tools/v0_1_conformance.py
+      - run: python tools/v0_2_conformance.py
+      - run: python tools/v0_3_conformance.py
+      - run: python tools/v0_4_conformance.py
+      - run: python tools/referencecity_integration_check.py

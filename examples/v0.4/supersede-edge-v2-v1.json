@@ -1,0 +1,1 @@
+{"edge_id":"tst:provenance-edge:referencecity-plan0001-v2-supersedes-v1","relation":"supersedes","from_ref":"tst:plan-version:referencecity-plan0001-v2","to_ref":"tst:plan-version:referencecity-plan0001-v1","basis_refs":["RC:SCENARIO:S002"],"created_at":"2030-03-02T01:00:01Z","actor_ref":"RC:ACTOR:003","schema_version":"0.4"}
