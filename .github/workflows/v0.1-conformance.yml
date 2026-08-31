@@ -3,6 +3,7 @@ name: v0.1 Protocol Conformance
 on:
   push:
     paths:
+      - "ROADMAP.md"
       - "schemas/v0.1/**"
       - "examples/v0.1/**"
       - "test-vectors/v0.1/**"
@@ -12,12 +13,14 @@ on:
       - ".github/workflows/v0.1-conformance.yml"
   pull_request:
     paths:
+      - "ROADMAP.md"
       - "schemas/v0.1/**"
       - "examples/v0.1/**"
       - "test-vectors/v0.1/**"
       - "locales/**"
       - "tools/v0_1_conformance.py"
       - "requirements-dev.txt"
+      - ".github/workflows/v0.1-conformance.yml"
 
 jobs:
   conformance:
