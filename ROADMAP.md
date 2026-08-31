@@ -8,16 +8,18 @@
 
 目标：建立最小、稳定、可测试的国土空间可信领域模型。
 
-- [ ] `SpatialObject`：空间对象 ID、类型、层级、外部数据引用、几何摘要引用
-- [ ] `SpatialEvent`：事件 ID、主体、对象、前后状态、时间、依据、证据 Hash
-- [ ] `Evidence`：Hash、签名、时间戳、外部 URI/对象存储引用
-- [ ] Canonical serialization：确定性序列化与内容寻址
-- [ ] 三语资源：`zh-CN` / `ja-JP` / `en-US`
-- [ ] 核心术语表与稳定机器 key
-- [ ] Schema versioning 与兼容策略
-- [ ] 基础单元测试、测试向量与示例数据
+- [x] `SpatialObject`：空间对象 ID、类型、层级/管辖域、外部数据与几何引用
+- [x] `SpatialEvent`：事件 ID、主体、对象、前后状态、时间、依据、证据引用
+- [x] `Evidence`：内容 Hash、时间戳、来源与外部 URI/对象存储引用
+- [x] Canonical serialization：`TST-C14N-JSON/0.1` 确定性序列化与 SHA-256 内容寻址
+- [x] 三语资源：`zh-CN` / `ja-JP` / `en-US`
+- [x] 核心术语表与稳定机器 key
+- [x] Schema versioning 与兼容策略
+- [x] Schema 校验、测试向量、等价输入测试与示例数据
 
 **验收标准**：同一 Spatial Event 在不同实现中可生成一致 canonical bytes 与一致 content hash；三语显示不改变协议字段。
+
+**v0.1 状态**：协议候选实现完成。合并前由 `v0.1 Protocol Conformance` CI 在多 Python 版本环境复核 Schema、canonical bytes、SHA-256 测试向量和三语 key 一致性。
 
 ## v0.2 — Trust & Authority
 
