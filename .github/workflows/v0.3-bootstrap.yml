@@ -29,6 +29,17 @@ jobs:
         run: python tools/v0_1_conformance.py
       - name: Run v0.2 regression
         run: python tools/v0_2_conformance.py
+      - name: Diagnose v0.3 vectors
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import tools.v0_3_conformance as c
+          vectors=json.loads(Path('test-vectors/v0.3/planning-rule-vectors.json').read_text())
+          for item in vectors['rules']:
+              actual=c.sha256_hex(json.loads(Path(item['path']).read_text()))
+              print(item['path'], actual, item['expected_sha256'], 'OK' if actual==item['expected_sha256'] else 'MISMATCH')
+          PY
       - name: Run v0.3 conformance
         run: python tools/v0_3_conformance.py
       - name: Commit generated protocol assets
@@ -39,4 +50,4 @@ jobs:
           git commit -m "feat(v0.3): implement planning rule protocol"
           git push origin HEAD:codex/v0.3-planning-rule
 
-# bootstrap-trigger: 2
+# bootstrap-trigger: 3
