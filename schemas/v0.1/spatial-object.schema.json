@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.1:spatial-object",
+  "title": "TST Chain SpatialObject v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object_id",
+    "object_type",
+    "jurisdiction",
+    "schema_version"
+  ],
+  "properties": {
+    "object_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jurisdiction": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_object_id": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "external_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/externalRef"
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "schema_version": {
+      "const": "0.1"
+    }
+  },
+  "$defs": {
+    "externalRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "external_id"],
+      "properties": {
+        "system": {
+          "type": "string",
+          "minLength": 1
+        },
+        "external_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "content_digest": {
+          "$ref": "#/$defs/contentDigest"
+        }
+      }
+    },
+    "contentDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
