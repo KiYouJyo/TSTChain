@@ -33,6 +33,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add schemas/v0.2 examples/v0.2 test-vectors/v0.2 docs/*/TRUST-AUTHORITY.md locales requirements-dev.txt tools/v0_2_conformance.py .github/workflows/v0.2-conformance.yml
+          git add schemas/v0.2 examples/v0.2 test-vectors/v0.2 docs/*/TRUST-AUTHORITY.md locales requirements-dev.txt tools/v0_2_conformance.py
           git commit -m "feat(v0.2): implement trust and authority protocol"
           git push origin HEAD:codex/v0.2-bootstrap
