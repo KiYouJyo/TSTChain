@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.2:authority",
+  "title": "TST Chain Authority v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "authority_id",
+    "subject_actor_id",
+    "issuer_actor_id",
+    "role",
+    "permissions",
+    "scope",
+    "valid_from",
+    "status",
+    "schema_version"
+  ],
+  "properties": {
+    "authority_id": {
+      "type": "string",
+      "pattern": "^tst:authority:[A-Za-z0-9._~-]+$"
+    },
+    "subject_actor_id": {
+      "type": "string",
+      "pattern": "^tst:actor:[A-Za-z0-9._~-]+$"
+    },
+    "issuer_actor_id": {
+      "type": "string",
+      "pattern": "^tst:actor:[A-Za-z0-9._~-]+$"
+    },
+    "role": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{1,127}$"
+    },
+    "permissions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{1,127}$"
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "global",
+        "jurisdiction_refs",
+        "object_types"
+      ],
+      "properties": {
+        "global": {
+          "type": "boolean"
+        },
+        "jurisdiction_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "object_types": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "basis_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "default": [],
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "valid_until": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "active",
+        "suspended",
+        "revoked",
+        "expired"
+      ]
+    },
+    "revoked_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revocation_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "schema_version": {
+      "const": "0.2"
+    },
+    "credential_requirements": {
+      "type": "array",
+      "uniqueItems": true,
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "credential_type",
+          "issuer_actor_ids"
+        ],
+        "properties": {
+          "credential_type": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]{1,127}$"
+          },
+          "issuer_actor_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^tst:actor:[A-Za-z0-9._~-]+$"
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "revoked"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "revoked_at"
+        ],
+        "properties": {
+          "revoked_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "expired"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "valid_until"
+        ],
+        "properties": {
+          "valid_until": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          }
+        }
+      }
+    }
+  ]
+}

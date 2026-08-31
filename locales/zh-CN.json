@@ -21,5 +21,17 @@
   "event.planApproved": "规划批准",
   "event.ruleEvaluated": "规划规则核验",
   "event.monitored": "实施监测",
-  "event.verified": "核实完成"
+  "event.verified": "核实完成",
+  "security.actor": "主体",
+  "security.publicKey": "公钥",
+  "security.signature": "分离式签名",
+  "security.authorization": "授权判定",
+  "security.audit": "审计记录",
+  "security.role": "角色",
+  "status.suspended": "已暂停",
+  "status.expired": "已过期",
+  "decision.allow": "允许",
+  "decision.deny": "拒绝",
+  "authority.permission": "权限",
+  "authority.scope": "权责范围"
 }

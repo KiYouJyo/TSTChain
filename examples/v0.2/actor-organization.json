@@ -1,0 +1,9 @@
+{
+  "actor_id": "tst:actor:org.referencecity.planning-bureau",
+  "actor_type": "organization",
+  "display_name": "Reference City Territorial Spatial Planning Bureau",
+  "organization_actor_id": null,
+  "external_refs": [],
+  "status": "active",
+  "schema_version": "0.2"
+}

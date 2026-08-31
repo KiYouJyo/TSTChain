@@ -1,0 +1,13 @@
+{
+  "key_id": "tst:key:org.referencecity.planning-bureau.2025-01",
+  "actor_id": "tst:actor:org.referencecity.planning-bureau",
+  "algorithm": "ed25519",
+  "public_key": "Kay64UG8yvCyLhqU000LxzYeUm0L_hLIl5S8kyKWbdc",
+  "valid_from": "2025-01-01T00:00:00Z",
+  "valid_until": "2025-12-31T23:59:59Z",
+  "status": "revoked",
+  "revoked_at": "2025-12-20T00:00:00Z",
+  "revocation_reason": "scheduled key rotation",
+  "predecessor_key_id": null,
+  "schema_version": "0.2"
+}

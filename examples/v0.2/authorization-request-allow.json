@@ -1,0 +1,10 @@
+{
+  "request_id": "tst:authreq:referencecity.review-0001",
+  "actor_id": "tst:actor:person.planner-001",
+  "action": "planning.plan.review",
+  "jurisdiction_ref": "RC-01",
+  "object_type": "planning_unit",
+  "subject_object_id": "tst:object:referencecity.unit-001",
+  "occurred_at": "2026-06-01T08:00:00Z",
+  "schema_version": "0.2"
+}

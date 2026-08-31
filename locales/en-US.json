@@ -21,5 +21,17 @@
   "event.planApproved": "Plan approved",
   "event.ruleEvaluated": "Planning rule evaluated",
   "event.monitored": "Implementation monitored",
-  "event.verified": "Verification completed"
+  "event.verified": "Verification completed",
+  "security.actor": "Actor",
+  "security.publicKey": "Public Key",
+  "security.signature": "Detached Signature",
+  "security.authorization": "Authorization",
+  "security.audit": "Audit Record",
+  "security.role": "Role",
+  "status.suspended": "Suspended",
+  "status.expired": "Expired",
+  "decision.allow": "Allow",
+  "decision.deny": "Deny",
+  "authority.permission": "Permission",
+  "authority.scope": "Authority Scope"
 }
