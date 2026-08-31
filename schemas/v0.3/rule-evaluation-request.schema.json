@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.3:rule-evaluation-request",
+  "title": "TST Chain RuleEvaluationRequest v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request_id", "rule_set_id", "subject_object_ref", "object_type", "jurisdiction_ref", "occurred_at", "facts", "external_input_digest", "schema_version"],
+  "properties": {
+    "request_id": {"type": "string", "pattern": "^tst:rule-eval-request:[A-Za-z0-9._~-]+$"},
+    "rule_set_id": {"type": "string", "pattern": "^tst:ruleset:[A-Za-z0-9._~-]+$"},
+    "subject_object_ref": {"type": "string", "minLength": 1},
+    "object_type": {"type": "string", "minLength": 1},
+    "jurisdiction_ref": {"type": "string", "minLength": 1},
+    "occurred_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["string_values", "decimal_values", "reference_sets", "spatial_relations"],
+      "properties": {
+        "string_values": {"type": "object", "additionalProperties": {"type": "string"}},
+        "decimal_values": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$"}},
+        "reference_sets": {"type": "object", "additionalProperties": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}},
+        "spatial_relations": {"type": "array", "uniqueItems": true, "items": {"type": "object", "additionalProperties": false, "required": ["constraint_ref", "relation", "evidence_ref"], "properties": {"constraint_ref": {"type": "string", "minLength": 1}, "relation": {"enum": ["intersects", "within", "contains", "crosses", "touches", "disjoint"]}, "evidence_ref": {"type": "string", "minLength": 1}}}}
+      }
+    },
+    "external_input_digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "canonicalization"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "canonicalization": {"type": "string", "minLength": 1}
+      }
+    },
+    "schema_version": {"const": "0.3"}
+  }
+}

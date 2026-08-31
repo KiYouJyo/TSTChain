@@ -1,0 +1,19 @@
+{
+  "spatial_evaluation_id": "tst:spatial-evaluation:referencecity-s007",
+  "subject_object_ref": "RC:PARCEL:000001",
+  "constraint_ref": "RC:BOUNDARY:ECO001",
+  "relation": "intersects",
+  "evaluator_system": "referencecity-synthetic-spatial-evaluator/0.1",
+  "evaluated_at": "2030-03-07T01:00:00Z",
+  "subject_geometry_digest": {
+    "algorithm": "sha256",
+    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "canonicalization": "RFC8785-JCS"
+  },
+  "constraint_geometry_digest": {
+    "algorithm": "sha256",
+    "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "canonicalization": "RFC8785-JCS"
+  },
+  "schema_version": "0.3"
+}

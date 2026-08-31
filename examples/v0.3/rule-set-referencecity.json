@@ -1,0 +1,13 @@
+{
+  "rule_set_id": "tst:ruleset:referencecity-baseline",
+  "version": "1",
+  "rule_refs": [
+    "tst:rule:referencecity-farmland-land-use",
+    "tst:rule:referencecity-ecological-intersection"
+  ],
+  "previous_rule_set_digest": null,
+  "valid_from": "2030-01-01T00:00:00Z",
+  "valid_until": null,
+  "status": "active",
+  "schema_version": "0.3"
+}

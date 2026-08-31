@@ -1,0 +1,27 @@
+{
+  "rule_id": "tst:rule:referencecity-ecological-intersection",
+  "rule_set_id": "tst:ruleset:referencecity-baseline",
+  "rule_type": "spatial_constraint",
+  "scope": {
+    "jurisdiction_refs": ["RC:CITY:001"],
+    "object_types": ["parcel"],
+    "target_object_refs": [],
+    "spatial_constraint_refs": ["RC:BOUNDARY:ECO001"]
+  },
+  "conditions": [
+    {
+      "condition_id": "forbid-intersection",
+      "kind": "spatial_relation_forbid",
+      "fact_key": "spatial_relations",
+      "constraint_ref": "RC:BOUNDARY:ECO001",
+      "relations": ["intersects", "crosses", "within"],
+      "violation_code": "TST-RULE-002"
+    }
+  ],
+  "basis_refs": ["referencecity:planning-constraint:ecological"],
+  "effective_from": "2030-01-01T00:00:00Z",
+  "effective_until": null,
+  "status": "active",
+  "supersedes_rule_id": null,
+  "schema_version": "0.3"
+}

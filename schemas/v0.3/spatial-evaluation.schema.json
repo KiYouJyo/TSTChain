@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.3:spatial-evaluation",
+  "title": "TST Chain External SpatialEvaluation Evidence v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spatial_evaluation_id", "subject_object_ref", "constraint_ref", "relation", "evaluator_system", "evaluated_at", "subject_geometry_digest", "constraint_geometry_digest", "schema_version"],
+  "properties": {
+    "spatial_evaluation_id": {"type": "string", "pattern": "^tst:spatial-evaluation:[A-Za-z0-9._~-]+$"},
+    "subject_object_ref": {"type": "string", "minLength": 1},
+    "constraint_ref": {"type": "string", "minLength": 1},
+    "relation": {"enum": ["intersects", "within", "contains", "crosses", "touches", "disjoint"]},
+    "evaluator_system": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "subject_geometry_digest": {"type": "object", "additionalProperties": false, "required": ["algorithm", "digest", "canonicalization"], "properties": {"algorithm": {"const": "sha256"}, "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "canonicalization": {"type": "string", "minLength": 1}}},
+    "constraint_geometry_digest": {"type": "object", "additionalProperties": false, "required": ["algorithm", "digest", "canonicalization"], "properties": {"algorithm": {"const": "sha256"}, "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "canonicalization": {"type": "string", "minLength": 1}}},
+    "schema_version": {"const": "0.3"}
+  }
+}

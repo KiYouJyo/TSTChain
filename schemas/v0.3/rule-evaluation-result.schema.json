@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.3:rule-evaluation-result",
+  "title": "TST Chain RuleEvaluationResult v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evaluation_id", "request_id", "rule_set_id", "outcome", "evaluated_rule_refs", "violations", "evaluator_ref", "evaluated_at", "schema_version"],
+  "properties": {
+    "evaluation_id": {"type": "string", "pattern": "^tst:rule-evaluation:[A-Za-z0-9._~-]+$"},
+    "request_id": {"type": "string", "pattern": "^tst:rule-eval-request:[A-Za-z0-9._~-]+$"},
+    "rule_set_id": {"type": "string", "pattern": "^tst:ruleset:[A-Za-z0-9._~-]+$"},
+    "outcome": {"enum": ["pass", "fail", "indeterminate"]},
+    "evaluated_rule_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^tst:rule:[A-Za-z0-9._~-]+$"}},
+    "violations": {"type": "array", "uniqueItems": true, "items": {"type": "object", "additionalProperties": false, "required": ["rule_id", "condition_id", "code", "severity"], "properties": {"rule_id": {"type": "string", "pattern": "^tst:rule:[A-Za-z0-9._~-]+$"}, "condition_id": {"type": "string"}, "code": {"type": "string", "pattern": "^TST-RULE-[0-9]{3}$"}, "severity": {"enum": ["info", "warning", "error"]}, "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}}},
+    "evaluator_ref": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "schema_version": {"const": "0.3"}
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "evaluation_id": "tst:rule-evaluation:referencecity-s006",
+  "request_id": "tst:rule-eval-request:referencecity-s006",
+  "rule_set_id": "tst:ruleset:referencecity-baseline",
+  "outcome": "fail",
+  "evaluated_rule_refs": ["tst:rule:referencecity-farmland-land-use"],
+  "violations": [
+    {"rule_id": "tst:rule:referencecity-farmland-land-use", "condition_id": "forbid-r2", "code": "TST-RULE-001", "severity": "error", "evidence_refs": []}
+  ],
+  "evaluator_ref": "tst:reference-rule-evaluator:0.3",
+  "evaluated_at": "2030-03-06T01:00:01Z",
+  "schema_version": "0.3"
+}

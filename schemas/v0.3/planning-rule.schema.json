@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.3:planning-rule",
+  "title": "TST Chain PlanningRule v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rule_id", "rule_set_id", "rule_type", "scope", "conditions", "effective_from", "status", "schema_version"],
+  "properties": {
+    "rule_id": {"type": "string", "pattern": "^tst:rule:[A-Za-z0-9._~-]+$"},
+    "rule_set_id": {"type": "string", "pattern": "^tst:ruleset:[A-Za-z0-9._~-]+$"},
+    "rule_type": {"enum": ["land_use", "numeric_control", "spatial_constraint", "eligibility", "composite"]},
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["jurisdiction_refs", "object_types", "target_object_refs", "spatial_constraint_refs"],
+      "properties": {
+        "jurisdiction_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "object_types": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "target_object_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "spatial_constraint_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "conditions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["condition_id", "kind", "fact_key", "violation_code"],
+        "properties": {
+          "condition_id": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{1,127}$"},
+          "kind": {"enum": ["enum_forbid", "enum_allow", "decimal_max", "decimal_min", "spatial_relation_forbid", "spatial_relation_require"]},
+          "fact_key": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{1,127}$"},
+          "values": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "threshold_decimal": {"type": "string", "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$"},
+          "unit": {"type": "string", "minLength": 1},
+          "constraint_ref": {"type": "string", "minLength": 1},
+          "relations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["intersects", "within", "contains", "crosses", "touches", "disjoint"]}},
+          "violation_code": {"type": "string", "pattern": "^TST-RULE-[0-9]{3}$"}
+        },
+        "allOf": [
+          {"if": {"properties": {"kind": {"enum": ["enum_forbid", "enum_allow"]}}, "required": ["kind"]}, "then": {"required": ["values"]}},
+          {"if": {"properties": {"kind": {"enum": ["decimal_max", "decimal_min"]}}, "required": ["kind"]}, "then": {"required": ["threshold_decimal", "unit"]}},
+          {"if": {"properties": {"kind": {"enum": ["spatial_relation_forbid", "spatial_relation_require"]}}, "required": ["kind"]}, "then": {"required": ["constraint_ref", "relations"]}}
+        ]
+      }
+    },
+    "basis_refs": {"type": "array", "uniqueItems": true, "default": [], "items": {"type": "string", "minLength": 1}},
+    "effective_from": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "effective_until": {"anyOf": [{"type": "string", "format": "date-time", "pattern": "Z$"}, {"type": "null"}]},
+    "status": {"enum": ["draft", "active", "superseded", "revoked"]},
+    "supersedes_rule_id": {"anyOf": [{"type": "string", "pattern": "^tst:rule:[A-Za-z0-9._~-]+$"}, {"type": "null"}]},
+    "schema_version": {"const": "0.3"}
+  }
+}

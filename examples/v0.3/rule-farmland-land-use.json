@@ -1,0 +1,26 @@
+{
+  "rule_id": "tst:rule:referencecity-farmland-land-use",
+  "rule_set_id": "tst:ruleset:referencecity-baseline",
+  "rule_type": "land_use",
+  "scope": {
+    "jurisdiction_refs": ["RC:CITY:001"],
+    "object_types": ["parcel"],
+    "target_object_refs": [],
+    "spatial_constraint_refs": ["RC:BOUNDARY:FARM001"]
+  },
+  "conditions": [
+    {
+      "condition_id": "forbid-r2",
+      "kind": "enum_forbid",
+      "fact_key": "proposed_land_use",
+      "values": ["R2"],
+      "violation_code": "TST-RULE-001"
+    }
+  ],
+  "basis_refs": ["referencecity:planning-constraint:farmland"],
+  "effective_from": "2030-01-01T00:00:00Z",
+  "effective_until": null,
+  "status": "active",
+  "supersedes_rule_id": null,
+  "schema_version": "0.3"
+}

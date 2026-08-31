@@ -1,0 +1,20 @@
+{
+  "request_id": "tst:rule-eval-request:referencecity-s006",
+  "rule_set_id": "tst:ruleset:referencecity-baseline",
+  "subject_object_ref": "RC:PARCEL:000010",
+  "object_type": "parcel",
+  "jurisdiction_ref": "RC:CITY:001",
+  "occurred_at": "2030-03-06T01:00:00Z",
+  "facts": {
+    "string_values": {"proposed_land_use": "R2"},
+    "decimal_values": {},
+    "reference_sets": {"spatial_context_refs": ["RC:BOUNDARY:FARM001"]},
+    "spatial_relations": []
+  },
+  "external_input_digest": {
+    "algorithm": "sha256",
+    "digest": "7dc927703106ca10881c41ab52fe22e4f748ff28bf54151a3e493e2fb9b75d99",
+    "canonicalization": "RFC8785-JCS"
+  },
+  "schema_version": "0.3"
+}

@@ -1,0 +1,13 @@
+{
+  "evaluation_id": "tst:rule-evaluation:referencecity-s007",
+  "request_id": "tst:rule-eval-request:referencecity-s007",
+  "rule_set_id": "tst:ruleset:referencecity-baseline",
+  "outcome": "fail",
+  "evaluated_rule_refs": ["tst:rule:referencecity-ecological-intersection"],
+  "violations": [
+    {"rule_id": "tst:rule:referencecity-ecological-intersection", "condition_id": "forbid-intersection", "code": "TST-RULE-002", "severity": "error", "evidence_refs": ["tst:spatial-evaluation:referencecity-s007"]}
+  ],
+  "evaluator_ref": "tst:reference-rule-evaluator:0.3",
+  "evaluated_at": "2030-03-07T01:00:01Z",
+  "schema_version": "0.3"
+}

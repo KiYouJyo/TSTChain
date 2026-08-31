@@ -1,0 +1,22 @@
+{
+  "request_id": "tst:rule-eval-request:referencecity-s007",
+  "rule_set_id": "tst:ruleset:referencecity-baseline",
+  "subject_object_ref": "RC:PARCEL:000001",
+  "object_type": "parcel",
+  "jurisdiction_ref": "RC:CITY:001",
+  "occurred_at": "2030-03-07T01:00:00Z",
+  "facts": {
+    "string_values": {},
+    "decimal_values": {},
+    "reference_sets": {"spatial_context_refs": ["RC:BOUNDARY:ECO001"]},
+    "spatial_relations": [
+      {"constraint_ref": "RC:BOUNDARY:ECO001", "relation": "intersects", "evidence_ref": "tst:spatial-evaluation:referencecity-s007"}
+    ]
+  },
+  "external_input_digest": {
+    "algorithm": "sha256",
+    "digest": "2cfd6c6913d699be6b04890d83a06b5c1ae6c24f6a094d8f0267dd9cae63b07a",
+    "canonicalization": "RFC8785-JCS"
+  },
+  "schema_version": "0.3"
+}
