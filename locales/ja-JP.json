@@ -21,5 +21,17 @@
   "event.planApproved": "計画承認",
   "event.ruleEvaluated": "計画ルール検証",
   "event.monitored": "実施モニタリング",
-  "event.verified": "検証完了"
+  "event.verified": "検証完了",
+  "security.actor": "主体",
+  "security.publicKey": "公開鍵",
+  "security.signature": "分離署名",
+  "security.authorization": "認可判定",
+  "security.audit": "監査記録",
+  "security.role": "ロール",
+  "status.suspended": "一時停止",
+  "status.expired": "期限切れ",
+  "decision.allow": "許可",
+  "decision.deny": "拒否",
+  "authority.permission": "権限",
+  "authority.scope": "権限範囲"
 }

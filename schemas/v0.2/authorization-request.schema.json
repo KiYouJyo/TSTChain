@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.2:authorization-request",
+  "title": "TST Chain AuthorizationRequest v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "actor_id",
+    "action",
+    "jurisdiction_ref",
+    "object_type",
+    "occurred_at",
+    "schema_version"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "pattern": "^tst:authreq:[A-Za-z0-9._~-]+$"
+    },
+    "actor_id": {
+      "type": "string",
+      "pattern": "^tst:actor:[A-Za-z0-9._~-]+$"
+    },
+    "action": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{1,127}$"
+    },
+    "jurisdiction_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_object_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^tst:object:[A-Za-z0-9._~-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "schema_version": {
+      "const": "0.2"
+    }
+  }
+}

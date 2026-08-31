@@ -1,0 +1,37 @@
+{
+  "authority_id": "tst:authority:referencecity.planner-001.review",
+  "subject_actor_id": "tst:actor:person.planner-001",
+  "issuer_actor_id": "tst:actor:org.referencecity.planning-bureau",
+  "role": "planning.reviewer",
+  "permissions": [
+    "planning.plan.review",
+    "planning.plan.submit"
+  ],
+  "scope": {
+    "global": false,
+    "jurisdiction_refs": [
+      "RC-01"
+    ],
+    "object_types": [
+      "planning_parcel",
+      "planning_unit"
+    ]
+  },
+  "basis_refs": [
+    "tst:evidence:referencecity.authority-basis-001"
+  ],
+  "valid_from": "2026-01-02T00:00:00Z",
+  "valid_until": "2027-01-01T23:59:59Z",
+  "status": "active",
+  "revoked_at": null,
+  "revocation_reason": null,
+  "schema_version": "0.2",
+  "credential_requirements": [
+    {
+      "credential_type": "planning.professional",
+      "issuer_actor_ids": [
+        "tst:actor:org.referencecity.planning-bureau"
+      ]
+    }
+  ]
+}

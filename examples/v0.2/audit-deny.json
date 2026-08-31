@@ -1,0 +1,14 @@
+{
+  "audit_id": "tst:audit:referencecity.review-0002",
+  "operation": "authorization.evaluate",
+  "outcome": "denied",
+  "actor_id": "tst:actor:person.planner-001",
+  "occurred_at": "2026-06-01T08:00:01Z",
+  "target_refs": [
+    "tst:authreq:referencecity.review-0002",
+    "tst:authz:referencecity.review-0002"
+  ],
+  "reason_code": "TST-AUTH-006",
+  "detail_digest": null,
+  "schema_version": "0.2"
+}

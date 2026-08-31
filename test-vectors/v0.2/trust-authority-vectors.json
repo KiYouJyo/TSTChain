@@ -1,0 +1,51 @@
+{
+  "profile": "TST-TRUST-AUTHORITY/0.2",
+  "warning": "Synthetic conformance keys only. Never use these private seeds in production.",
+  "signature_domain_utf8": "TSTCHAIN-SIGNATURE-V0.2\\u0000",
+  "credential": {
+    "payload": "examples/v0.2/credential.json",
+    "canonicalization": "TST-C14N-JSON/0.1",
+    "expected_sha256": "36dcfcee01027ab9443d71fbc24282d98eec55d1226c195d3a91a74cba3edd7e",
+    "active_key": {
+      "public_key": "examples/v0.2/public-key-current.json",
+      "private_seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "signature": "examples/v0.2/credential.signature.json",
+      "expected_signature_base64url": "XC-MquF--mWHyBZH1wWSKX5hxT8IxNiYcbYZmJnFZ4vucPigJztXbvkgo8e7lKc8W6WUIJ4SDY3ZQ1OlVY_SBA",
+      "expected_result": "valid",
+      "expected_reason_code": "TST-SIG-000"
+    },
+    "revoked_key": {
+      "public_key": "examples/v0.2/public-key-revoked.json",
+      "private_seed_hex": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "signature": "examples/v0.2/credential.signature-revoked-key.json",
+      "expected_result": "rejected",
+      "expected_reason_code": "TST-SIG-002",
+      "expected_signature_base64url": "sS0kkNnvTgnDYAQC3NEYN0HN93e6-kY2OKZoahejueFtYd_L1yMQcgr6Emb7keoH7OjiKrRfWWNDUv5vffljAA"
+    }
+  },
+  "authorization": [
+    {
+      "request": "examples/v0.2/authorization-request-allow.json",
+      "decision": "examples/v0.2/authorization-decision-allow.json",
+      "expected": "allow",
+      "expected_reason_code": "TST-AUTH-000"
+    },
+    {
+      "request": "examples/v0.2/authorization-request-deny.json",
+      "decision": "examples/v0.2/authorization-decision-deny.json",
+      "expected": "deny",
+      "expected_reason_code": "TST-AUTH-006"
+    }
+  ],
+  "authority": {
+    "payload": "examples/v0.2/authority.json",
+    "canonicalization": "TST-C14N-JSON/0.1",
+    "expected_sha256": "fa2fb87e35918613e82d1ec74ab47f456d8952f434abc20e09ff76b93ab7be26",
+    "key": "examples/v0.2/public-key-current.json",
+    "private_seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+    "signature": "examples/v0.2/authority.signature.json",
+    "expected_signature_base64url": "5Q4PBEaOhlaL6I9kAP1-2wCoz2ykRM6sys-Z_qn7x5gTHSW_ayV13SwZWadAfO9oJl2DcTbrCRO1_KRXJm_4Aw",
+    "expected_result": "valid",
+    "expected_reason_code": "TST-SIG-000"
+  }
+}

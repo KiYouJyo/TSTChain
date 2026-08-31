@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.2:authorization-decision",
+  "title": "TST Chain AuthorizationDecision v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision_id",
+    "request_id",
+    "decision",
+    "reason_code",
+    "evaluated_authority_ids",
+    "evaluated_credential_ids",
+    "evaluated_at",
+    "policy_version",
+    "schema_version"
+  ],
+  "properties": {
+    "decision_id": {
+      "type": "string",
+      "pattern": "^tst:authz:[A-Za-z0-9._~-]+$"
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^tst:authreq:[A-Za-z0-9._~-]+$"
+    },
+    "decision": {
+      "enum": [
+        "allow",
+        "deny"
+      ]
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^TST-(AUTH|SIG)-[0-9]{3}$"
+    },
+    "evaluated_authority_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^tst:authority:[A-Za-z0-9._~-]+$"
+      }
+    },
+    "evaluated_credential_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^tst:credential:[A-Za-z0-9._~-]+$"
+      }
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "policy_version": {
+      "const": "TST-AUTHZ/0.2"
+    },
+    "schema_version": {
+      "const": "0.2"
+    }
+  }
+}

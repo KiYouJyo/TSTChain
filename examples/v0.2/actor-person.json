@@ -1,0 +1,9 @@
+{
+  "actor_id": "tst:actor:person.planner-001",
+  "actor_type": "person",
+  "display_name": "Reference Planner 001",
+  "organization_actor_id": "tst:actor:org.referencecity.planning-bureau",
+  "external_refs": [],
+  "status": "active",
+  "schema_version": "0.2"
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.2:signature",
+  "title": "TST Chain DetachedSignature v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "signature_id",
+    "key_id",
+    "signer_actor_id",
+    "algorithm",
+    "canonicalization",
+    "payload_digest",
+    "signature",
+    "created_at",
+    "schema_version"
+  ],
+  "properties": {
+    "signature_id": {
+      "type": "string",
+      "pattern": "^tst:signature:[A-Za-z0-9._~-]+$"
+    },
+    "key_id": {
+      "type": "string",
+      "pattern": "^tst:key:[A-Za-z0-9._~-]+$"
+    },
+    "algorithm": {
+      "const": "ed25519"
+    },
+    "canonicalization": {
+      "const": "TST-C14N-JSON/0.1"
+    },
+    "payload_digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "digest"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "description": "64-byte Ed25519 signature encoded as unpadded base64url"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "schema_version": {
+      "const": "0.2"
+    },
+    "signer_actor_id": {
+      "type": "string",
+      "pattern": "^tst:actor:[A-Za-z0-9._~-]+$"
+    }
+  }
+}

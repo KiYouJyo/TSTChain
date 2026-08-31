@@ -1,0 +1,15 @@
+{
+  "decision_id": "tst:authz:referencecity.review-0001",
+  "request_id": "tst:authreq:referencecity.review-0001",
+  "decision": "allow",
+  "reason_code": "TST-AUTH-000",
+  "evaluated_authority_ids": [
+    "tst:authority:referencecity.planner-001.review"
+  ],
+  "evaluated_credential_ids": [
+    "tst:credential:referencecity.planner-001.professional"
+  ],
+  "evaluated_at": "2026-06-01T08:00:01Z",
+  "policy_version": "TST-AUTHZ/0.2",
+  "schema_version": "0.2"
+}

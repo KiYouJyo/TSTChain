@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.2:public-key",
+  "title": "TST Chain PublicKey v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "key_id",
+    "actor_id",
+    "algorithm",
+    "public_key",
+    "valid_from",
+    "status",
+    "schema_version"
+  ],
+  "properties": {
+    "key_id": {
+      "type": "string",
+      "pattern": "^tst:key:[A-Za-z0-9._~-]+$"
+    },
+    "actor_id": {
+      "type": "string",
+      "pattern": "^tst:actor:[A-Za-z0-9._~-]+$"
+    },
+    "algorithm": {
+      "const": "ed25519"
+    },
+    "public_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "description": "32-byte Ed25519 public key encoded as unpadded base64url"
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "valid_until": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "active",
+        "revoked",
+        "expired"
+      ]
+    },
+    "revoked_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revocation_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "predecessor_key_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^tst:key:[A-Za-z0-9._~-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schema_version": {
+      "const": "0.2"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "revoked"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "revoked_at"
+        ],
+        "properties": {
+          "revoked_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "expired"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "valid_until"
+        ],
+        "properties": {
+          "valid_until": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          }
+        }
+      }
+    }
+  ]
+}

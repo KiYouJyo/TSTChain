@@ -1,0 +1,13 @@
+{
+  "key_id": "tst:key:org.referencecity.planning-bureau.2026-01",
+  "actor_id": "tst:actor:org.referencecity.planning-bureau",
+  "algorithm": "ed25519",
+  "public_key": "A6EHv_POEL4dcN0Y50vAmWfk1jCbpQ1fHdyGZBJVMbg",
+  "valid_from": "2026-01-01T00:00:00Z",
+  "valid_until": null,
+  "status": "active",
+  "revoked_at": null,
+  "revocation_reason": null,
+  "predecessor_key_id": "tst:key:org.referencecity.planning-bureau.2025-01",
+  "schema_version": "0.2"
+}

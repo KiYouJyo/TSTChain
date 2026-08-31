@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.2:audit-record",
+  "title": "TST Chain AuditRecord v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "audit_id",
+    "operation",
+    "outcome",
+    "actor_id",
+    "occurred_at",
+    "target_refs",
+    "reason_code",
+    "schema_version"
+  ],
+  "properties": {
+    "audit_id": {
+      "type": "string",
+      "pattern": "^tst:audit:[A-Za-z0-9._~-]+$"
+    },
+    "operation": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{1,127}$"
+    },
+    "outcome": {
+      "enum": [
+        "success",
+        "failure",
+        "denied"
+      ]
+    },
+    "actor_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^tst:actor:[A-Za-z0-9._~-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "target_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^TST-[A-Z]+-[0-9]{3}$"
+    },
+    "detail_digest": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "algorithm",
+            "digest"
+          ],
+          "properties": {
+            "algorithm": {
+              "const": "sha256"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schema_version": {
+      "const": "0.2"
+    }
+  }
+}

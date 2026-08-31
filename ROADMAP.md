@@ -19,21 +19,27 @@
 
 **验收标准**：同一 Spatial Event 在不同实现中可生成一致 canonical bytes 与一致 content hash；三语显示不改变协议字段。
 
-**v0.1 状态**：协议候选实现完成。合并前由 `v0.1 Protocol Conformance` CI 在多 Python 版本环境复核 Schema、canonical bytes、SHA-256 测试向量和三语 key 一致性。
+**v0.1 状态**：协议候选实现完成。`v0.1 Protocol Conformance` CI 在多 Python 版本环境复核 Schema、canonical bytes、SHA-256 测试向量和三语 key 一致性。
 
 ## v0.2 — Trust & Authority
 
 目标：让“谁有权做什么、谁签署了什么”成为可验证对象。
 
-- [ ] `Authority` / `Actor` 数据模型
-- [ ] 机构、人员、角色与职权范围
-- [ ] Digital Signature abstraction
-- [ ] Credential / certificate abstraction
-- [ ] Event authorization policy
-- [ ] 签名验证、撤销与密钥轮换模型
-- [ ] 审计日志与错误码规范
+- [x] `Actor` / `Authority` 数据模型
+- [x] 机构、人员、服务主体、角色、权限与管辖范围
+- [x] Ed25519 detached signature abstraction 与签名域分离
+- [x] `Credential` 与可信签发主体约束
+- [x] `TST-AUTHZ/0.2` reference authorization policy
+- [x] 签名验证、密钥撤销、有效期与 predecessor key rotation 模型
+- [x] `AuthorizationDecision` / `AuditRecord` 与稳定错误码规范
+- [x] 三语术语、合成示例、确定性签名与授权测试向量
+- [x] Python 3.11–3.13 CI，同时执行 v0.1 回归
 
-**原则**：链不创造现实行政权力，只映射和验证现实制度中的授权关系。
+**原则**：链不创造现实行政权力，只映射和验证现实制度中的授权关系。`Authority` 是数字权责声明，生产部署必须对应真实有效的法定、组织或委托依据。
+
+**验收标准**：同一 Credential / Authority 在不同实现中生成一致 canonical payload 与 SHA-256；Ed25519 测试签名可复现；撤销密钥必须被拒绝；授权策略能够稳定区分权限、时间、管辖范围、对象类型与可信 Credential 签发主体。
+
+**v0.2 状态**：协议候选实现完成。ReferenceCity 尚在建设时继续使用最小合成 fixture，不将外部测试数据仓库作为协议开发阻塞项。
 
 ## v0.3 — Planning Rule
 
