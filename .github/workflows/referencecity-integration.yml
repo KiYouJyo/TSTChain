@@ -21,6 +21,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: pip install -r requirements-dev.txt
       - run: python tools/referencecity_integration_check.py
       - run: python tools/v0_1_conformance.py
       - run: python tools/v0_2_conformance.py
