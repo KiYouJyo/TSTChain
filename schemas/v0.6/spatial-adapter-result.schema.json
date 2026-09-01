@@ -11,7 +11,7 @@
     "subject_ref": {"type": "string", "minLength": 1},
     "constraint_ref": {"type": "string", "minLength": 1},
     "relation": {
-      "description": "Observed coarse topological relation, independent of the requested operation. 'intersects' is the fallback for non-disjoint relations not classified as within or contains.",
+      "description": "Protocol relation for downstream PlanningRule compatibility. When relation_value is true, relation equals the requested operation. When false, relation records an observed coarse relation explaining the failed predicate.",
       "enum": ["intersects", "within", "contains", "disjoint"]
     },
     "relation_value": {
