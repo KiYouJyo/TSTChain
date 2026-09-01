@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.6:spatial-adapter-result",
+  "title": "TST Chain SpatialAdapterResult v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["adapter_result_id", "operation", "subject_ref", "constraint_ref", "relation", "evaluator", "source_assets", "subject_geometry_digest", "constraint_geometry_digest", "evaluated_at", "schema_version"],
+  "properties": {
+    "adapter_result_id": {"type": "string", "pattern": "^tst:adapter-result:[A-Za-z0-9._~-]+$"},
+    "operation": {"enum": ["intersects", "within", "contains", "disjoint"]},
+    "subject_ref": {"type": "string", "minLength": 1},
+    "constraint_ref": {"type": "string", "minLength": 1},
+    "relation": {"enum": ["intersects", "within", "contains", "disjoint"]},
+    "relation_value": {"type": "boolean"},
+    "intersection_area_decimal": {"type": ["string", "null"], "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"},
+    "evaluator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "version"],
+      "properties": {
+        "system": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_assets": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^tst:external-asset:[A-Za-z0-9._~-]+$"}
+    },
+    "subject_geometry_digest": {"$ref": "#/$defs/digest"},
+    "constraint_geometry_digest": {"$ref": "#/$defs/digest"},
+    "evaluated_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "schema_version": {"const": "0.6"}
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "canonicalization"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "canonicalization": {"const": "RFC8785-JCS"}
+      }
+    }
+  }
+}
