@@ -1,0 +1,44 @@
+name: v0.3 Planning Rule Conformance
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "schemas/v0.3/**"
+      - "examples/v0.3/**"
+      - "test-vectors/v0.3/**"
+      - "tools/v0_3_conformance.py"
+      - "locales/**"
+      - "requirements-dev.txt"
+      - ".github/workflows/v0.3-conformance.yml"
+  pull_request:
+    paths:
+      - "schemas/v0.3/**"
+      - "examples/v0.3/**"
+      - "test-vectors/v0.3/**"
+      - "tools/v0_3_conformance.py"
+      - "locales/**"
+      - "requirements-dev.txt"
+      - ".github/workflows/v0.3-conformance.yml"
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -r requirements-dev.txt
+      - name: v0.1 regression
+        run: python tools/v0_1_conformance.py
+      - name: v0.2 regression
+        run: python tools/v0_2_conformance.py
+      - name: v0.3 conformance
+        run: python tools/v0_3_conformance.py
