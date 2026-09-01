@@ -22,9 +22,13 @@ on:
       - "requirements-dev.txt"
       - ".github/workflows/v0.3-conformance.yml"
 
+permissions:
+  contents: read
+
 jobs:
   conformance:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
