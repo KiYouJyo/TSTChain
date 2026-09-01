@@ -1,19 +1,34 @@
 name: v0.5 Workflow Conformance
+
 on:
   push:
-    paths: ['schemas/v0.5/**','examples/v0.5/**','tools/v0_5_conformance.py','tools/v0_4_conformance.py','integrations/referencecity/**','.github/workflows/v0.5-conformance.yml']
+    paths:
+      - 'schemas/v0.5/**'
+      - 'examples/v0.5/**'
+      - 'tools/v0_5_conformance.py'
+      - 'tools/v0_4_conformance.py'
+      - 'integrations/referencecity/**'
+      - '.github/workflows/v0.5-conformance.yml'
   pull_request:
-    paths: ['schemas/v0.5/**','examples/v0.5/**','tools/v0_5_conformance.py','integrations/referencecity/**']
+    paths:
+      - 'schemas/v0.5/**'
+      - 'examples/v0.5/**'
+      - 'tools/v0_5_conformance.py'
+      - 'tools/v0_4_conformance.py'
+      - 'integrations/referencecity/**'
+  workflow_dispatch:
+
 jobs:
   conformance:
     strategy:
       matrix:
-        python-version: ['3.11','3.12','3.13']
+        python-version: ['3.11', '3.12', '3.13']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: {python-version: '${{ matrix.python-version }}'}
+        with:
+          python-version: '${{ matrix.python-version }}'
       - run: pip install -r requirements-dev.txt
       - run: python tools/v0_1_conformance.py
       - run: python tools/v0_2_conformance.py
