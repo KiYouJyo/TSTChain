@@ -17,7 +17,7 @@ PlanningRule / RuleSet / RuleEvaluation / SpatialEvaluation 已完成，S006/S00
 PlanArtifact / PlanVersion / ProvenanceEdge / HistoricalVersionVerification 已完成，S001/S002/S009 的版本和历史模型已建立。
 
 ## ReferenceCity 验收基线
-截至 v0.6 GIS slice，S001–S010 仍为 **0 full / 10 partial / 0 unsupported**。所有场景的主协议判定均已具备，S007 已由真实 ReferenceCity geometry 驱动外部 GIS evaluator；`full` 仍要求 v0.7 的持久权威状态，因此现在不人为宣称端到端链 PASS。
+截至 v0.7 persistent-ledger benchmark，ReferenceCity S001–S010 已达到 **10 full / 0 partial / 0 unsupported**。十个场景均由同一持久权威账本执行并逐项匹配 pinned ReferenceCity expected output；账本随后通过重启 replay 恢复，并由 Authority validator quorum 对实际 ledger prefix 的 Merkle root 完成 finality。该基线已在 Python 3.11、3.12、3.13 三版本 CI 中通过。
 
 ## v0.5 — Workflow — 协议候选实现完成
 - [x] WorkflowDefinition / states / transitions；
@@ -48,8 +48,25 @@ PlanArtifact / PlanVersion / ProvenanceEdge / HistoricalVersionVerification 已�
 
 **原则**：Shapely 只是参考适配器，不是协议依赖。生产系统可替换为 PostGIS、QGIS、ArcGIS 或其他 GIS 引擎，只要产生同一 v0.6 证据契约。
 
-## v0.7 — Distributed Ledger Prototype
-Append-only ledger、Merkle commitment、Authority validator set、finality、snapshot/checkpoint/state sync、atomic transition + audit persistence，并真正运行 ReferenceCity S001–S010 evaluator。
+## v0.7 — Distributed Ledger Prototype — 核心验收完成，节点化收口进行中
+目标：把 v0.1–v0.6 的可信对象、规则、流程、证据与来源关系落实为可恢复、可终局确认、可同步的持久权威状态。
+
+- [x] append-only SHA-256 predecessor hash chain；
+- [x] accepted / rejected workflow outcome 原子持久化；
+- [x] Evidence / Provenance 持久记录与后续摘要核验；
+- [x] snapshot 仅作可丢弃缓存，权威状态由 ledger replay 恢复；
+- [x] deterministic Merkle checkpoint；
+- [x] Authority validator set + Ed25519 quorum finality；
+- [x] checkpoint 对实际 ledger prefix 的 Merkle 反证；
+- [x] `StateSyncBundle`：finalized ledger prefix + checkpoint + validator set；
+- [x] state sync bundle hash、签名、Merkle、hash-chain 全链验证；
+- [x] state sync fork rejection / rollback rejection；
+- [x] ReferenceCity S001–S010 persistent benchmark：**10 full / 0 partial / 0 unsupported**；
+- [x] Python 3.11–3.13 v0.1–v0.7 regression + full benchmark；
+- [ ] NodeIdentity / 节点身份与 peer authentication；
+- [ ] checkpoint chain / validator-set evolution；
+- [ ] crash/fault recovery protocol 与中断写入恢复；
+- [ ] incremental state sync / multi-node replication。
 
 ## v0.8 — Hierarchical & Jurisdictional Scaling
 County/Domain → City → Province → National/Federation Root：partition、cross-domain proof、hierarchical checkpoint、selective replication、data-residency hooks。
