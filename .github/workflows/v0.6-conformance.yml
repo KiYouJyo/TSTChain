@@ -1,0 +1,51 @@
+name: v0.6 Spatial Interoperability Conformance
+
+on:
+  push:
+    branches:
+      - main
+      - codex/v0.6-spatial-qa
+    paths:
+      - "schemas/v0.6/**"
+      - "tools/referencecity_gis_adapter.py"
+      - "tools/v0_6_conformance.py"
+      - "requirements-dev.txt"
+      - ".github/workflows/v0.6-conformance.yml"
+  pull_request:
+    paths:
+      - "schemas/v0.6/**"
+      - "tools/referencecity_gis_adapter.py"
+      - "tools/v0_6_conformance.py"
+      - "requirements-dev.txt"
+      - ".github/workflows/v0.6-conformance.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -r requirements-dev.txt
+      - name: v0.1 regression
+        run: python tools/v0_1_conformance.py
+      - name: v0.2 regression
+        run: python tools/v0_2_conformance.py
+      - name: v0.3 regression
+        run: python tools/v0_3_conformance.py
+      - name: v0.4 regression
+        run: python tools/v0_4_conformance.py
+      - name: v0.5 regression
+        run: python tools/v0_5_conformance.py
+      - name: v0.6 conformance
+        run: python tools/v0_6_conformance.py
