@@ -263,7 +263,7 @@ def run(rc_root: Path, ledger_root: Path) -> dict:
     rule_eval = rule_evaluate(load(S006_REQUEST), [load(S006_RULE)])
     if rule_eval["outcome"] != "fail" or not rule_eval["violations"]:
         raise AssertionError("S006 reference rule evaluator did not produce the expected conflict")
-    store.record_evidence({"rule_evaluation": rule_eval}, rule_eval["evaluated_at"])
+    store.record_evidence({"rule_evaluation": rule_eval}, utc_z(q["occurred_at"]))
     mapped = mapped_request(
         q, "bench-s006-conflict", "open_amendment", "tst:wf-instance:bench-s006", "plan.amend",
         rules=[{"evaluation_ref": rule_eval["evaluation_id"], "outcome": rule_eval["outcome"]}],
