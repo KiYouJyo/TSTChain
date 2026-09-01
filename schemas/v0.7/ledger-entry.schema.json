@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.7:ledger-entry",
+  "title": "TST Chain LedgerEntry v0.7",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ledger_id", "entry_id", "sequence", "entry_type", "previous_entry_hash", "payload", "payload_digest", "committed_at", "entry_hash", "schema_version"],
+  "properties": {
+    "ledger_id": {"type": "string", "pattern": "^tst:ledger:[A-Za-z0-9._~-]+$"},
+    "entry_id": {"type": "string", "pattern": "^tst:ledger-entry:[A-Za-z0-9._~-]+$"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "entry_type": {"enum": ["workflow_commit", "workflow_rejection", "evidence_record", "provenance_record", "state_seed"]},
+    "previous_entry_hash": {"anyOf": [{"type": "string", "pattern": "^[0-9a-f]{64}$"}, {"type": "null"}]},
+    "payload": {"type": "object"},
+    "payload_digest": {"$ref": "#/$defs/digest"},
+    "committed_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "entry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "schema_version": {"const": "0.7"}
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "canonicalization"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "canonicalization": {"const": "RFC8785-JCS"}
+      }
+    }
+  }
+}
