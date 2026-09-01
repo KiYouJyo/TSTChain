@@ -6,12 +6,16 @@ on:
       - 'schemas/v0.8/**'
       - 'tools/v0_8_hierarchy.py'
       - 'tools/v0_8_conformance.py'
+      - 'tools/v0_8_delegation.py'
+      - 'tools/v0_8_delegation_conformance.py'
       - '.github/workflows/v0.8-conformance.yml'
   pull_request:
     paths:
       - 'schemas/v0.8/**'
       - 'tools/v0_8_hierarchy.py'
       - 'tools/v0_8_conformance.py'
+      - 'tools/v0_8_delegation.py'
+      - 'tools/v0_8_delegation_conformance.py'
       - '.github/workflows/v0.8-conformance.yml'
   workflow_dispatch:
 
@@ -53,10 +57,13 @@ jobs:
         working-directory: tstchain
       - run: python tools/v0_8_conformance.py
         working-directory: tstchain
+      - run: python tools/v0_8_delegation_conformance.py
+        working-directory: tstchain
       - run: python tools/referencecity_integration_check.py
         working-directory: tstchain
 
-      # Preserve the v0.7 external benchmark as a regression gate while adding hierarchy.
+      # Preserve the v0.7 external benchmark as a hard regression gate while
+      # adding hierarchy and validator delegation.
       - name: Build isolated ReferenceCity benchmark input
         run: python referencecity/tools/build_benchmark_input.py --output '${{ github.workspace }}/rc-benchmark-input'
       - name: Assert Ground Truth isolation
