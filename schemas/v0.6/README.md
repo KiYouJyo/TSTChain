@@ -5,7 +5,21 @@ v0.6 defines the trust boundary between TST Chain and external spatial/data syst
 ## Objects
 
 - `ExternalSpatialAsset` records the identity, source, CRS and content digest of an externally managed spatial asset.
-- `SpatialAdapterResult` records a reproducible spatial relation evaluation together with the exact source assets and geometry digests used.
+- `SpatialAdapterResult` records a reproducible spatial predicate evaluation together with the exact source assets and geometry digests used.
+
+## Spatial predicate semantics
+
+`operation` is the requested predicate (`intersects`, `within`, `contains`, or `disjoint`). `relation_value` is the authoritative boolean result for that requested predicate and is therefore required.
+
+`relation` is a coarse observed topological classification independent of the requested predicate. The reference adapter classifies in this order: `disjoint`, `within`, `contains`, then `intersects` as the fallback for other non-disjoint relationships. A failed `within` or `contains` predicate MUST NOT be rewritten as `intersects` unless the observed geometry actually intersects.
+
+`intersection_area_decimal` is optional evidence expressed in the source CRS coordinate-square units. Implementations MUST set it to `null` or omit it when the source CRS does not define meaningful planar area. It must not be interpreted as square metres unless the source CRS/profile explicitly establishes metre coordinates.
+
+## Provenance time and evaluator identity
+
+`evaluated_at` records the actual evaluation time. Reference fixtures may inject an explicit UTC `Z` timestamp for reproducibility; production calls must not reuse a fixture timestamp. The evaluator system and implementation version are recorded so that results can be reproduced or compared across engine upgrades.
+
+Empty or invalid geometries are rejected by the reference adapter rather than silently repaired, because silent repair would change the evidence being evaluated.
 
 ## Canonicalization boundary
 
