@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import rfc8785
@@ -30,6 +31,13 @@ def validate(schema_path: Path, value) -> None:
     schema = load(schema_path)
     Draft202012Validator.check_schema(schema)
     Draft202012Validator(schema, format_checker=FormatChecker()).validate(value)
+
+
+def utc_z(value: str) -> str:
+    parsed = datetime.fromisoformat(value)
+    if parsed.tzinfo is None:
+        raise ValueError("scenario occurred_at must include a timezone offset")
+    return parsed.astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def request_digest(payload: dict) -> str:
@@ -82,18 +90,32 @@ def main() -> int:
     project_workflow = load(ED6 / "workflow-project-application.json")
     validate(ROOT / "schemas" / "v0.5" / "workflow-definition.schema.json", project_workflow)
 
+    adapter_schema = load(SD / "spatial-adapter-result.schema.json")
+    assert "relation_value" in adapter_schema["required"], "requested predicate verdict must be explicit"
+
+    # S007 fixture time is source data, not an adapter constant.
+    rc_request = load(rc_root / "scenarios" / "v0.1" / "S007" / "request.json")
+    scenario_evaluated_at = utc_z(rc_request["occurred_at"])
+    assert scenario_evaluated_at == "2030-03-07T01:00:00Z"
+
     # S007: calculate from generated geometry. No expected/Ground Truth file is read.
-    bundle = spatial_evaluate(rc_root, "RC:PARCEL:000001", "RC:BOUNDARY:ECO001", "intersects")
+    bundle = spatial_evaluate(
+        rc_root,
+        "RC:PARCEL:000001",
+        "RC:BOUNDARY:ECO001",
+        "intersects",
+        scenario_evaluated_at,
+    )
     for asset in bundle["external_assets"]:
         validate(SD / "external-spatial-asset.schema.json", asset)
     validate(SD / "spatial-adapter-result.schema.json", bundle["adapter_result"])
     validate(ROOT / "schemas" / "v0.3" / "spatial-evaluation.schema.json", bundle["spatial_evaluation"])
     assert bundle["adapter_result"]["relation_value"] is True
     assert bundle["adapter_result"]["relation"] == "intersects"
+    assert bundle["adapter_result"]["evaluated_at"] == scenario_evaluated_at
     assert float(bundle["adapter_result"]["intersection_area_decimal"]) > 0
 
     # Verify ReferenceCity's public request payload digest independently with RFC 8785.
-    rc_request = load(rc_root / "scenarios" / "v0.1" / "S007" / "request.json")
     payload_digest = request_digest(rc_request["payload"])
     assert rc_request["payload_hash"] == "sha256:" + payload_digest
 
@@ -111,14 +133,34 @@ def main() -> int:
     assert wf_result["semantic_code"] == "RULE_CONFLICT"
 
     # Counterfactual control: a far-eastern parcel must be disjoint from the western ecological band.
-    control = spatial_evaluate(rc_root, "RC:PARCEL:000010", "RC:BOUNDARY:ECO001", "intersects")
+    control = spatial_evaluate(
+        rc_root,
+        "RC:PARCEL:000010",
+        "RC:BOUNDARY:ECO001",
+        "intersects",
+        scenario_evaluated_at,
+    )
     assert control["adapter_result"]["relation_value"] is False
     assert control["adapter_result"]["relation"] == "disjoint"
+    assert control["adapter_result"]["adapter_result_id"] != bundle["adapter_result"]["adapter_result_id"]
     control_req = rule_request("RC:PARCEL:000010", "disjoint", control["spatial_evaluation"]["spatial_evaluation_id"], payload_digest)
     control_verdict = rule_evaluate(control_req, [rule])
     assert control_verdict["outcome"] == "pass"
     accepted = Engine(project_workflow).transition(workflow_request("pass", payload_digest, "referencecity-control"), "2030-03-07T01:00:01Z")
     assert accepted["accepted"] is True and accepted["current_state"] == "submitted"
+
+    # A false 'within' predicate does not imply 'intersects'. The observed relation remains disjoint.
+    control_within = spatial_evaluate(
+        rc_root,
+        "RC:PARCEL:000010",
+        "RC:BOUNDARY:ECO001",
+        "within",
+        scenario_evaluated_at,
+    )
+    validate(SD / "spatial-adapter-result.schema.json", control_within["adapter_result"])
+    assert control_within["adapter_result"]["relation_value"] is False
+    assert control_within["adapter_result"]["relation"] == "disjoint"
+    assert control_within["adapter_result"]["adapter_result_id"] != control["adapter_result"]["adapter_result_id"]
 
     # Ordered external geometry is RFC8785-JCS evidence, never TST-C14N-JSON/0.1 input.
     assert bundle["adapter_result"]["subject_geometry_digest"]["canonicalization"] == "RFC8785-JCS"
@@ -127,6 +169,7 @@ def main() -> int:
     print("TST Chain v0.6 GIS interoperability conformance: PASS")
     print("  ReferenceCity S007: generated geometry -> Shapely -> PlanningRule -> Workflow rejection")
     print("  control parcel: disjoint -> rule pass -> workflow accepted")
+    print("  predicate semantics: operation verdict and observed relation remain independent")
     print("  Ground Truth consumed by adapter/conformance: NO")
     return 0
 
