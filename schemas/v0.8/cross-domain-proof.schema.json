@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.8:cross-domain-proof",
+  "title": "TST Chain CrossDomainProof v0.8",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["proof_id", "source_domain_id", "target_domain_id", "subject_ref", "source_entry", "source_entry_record", "source_checkpoint", "hierarchy_anchor", "inclusion_proof", "disclosure", "created_at", "schema_version"],
+  "properties": {
+    "proof_id": {"type": "string", "pattern": "^tst:cross-domain-proof:[A-Za-z0-9._~-]+$"},
+    "source_domain_id": {"type": "string", "pattern": "^tst:domain:[A-Za-z0-9._~-]+$"},
+    "target_domain_id": {"type": "string", "pattern": "^tst:domain:[A-Za-z0-9._~-]+$"},
+    "subject_ref": {"type": "string", "minLength": 1},
+    "source_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entry_id", "sequence", "entry_hash", "payload_digest"],
+      "properties": {
+        "entry_id": {"type": "string", "pattern": "^tst:ledger-entry:[A-Za-z0-9._~-]+$"},
+        "sequence": {"type": "integer", "minimum": 1},
+        "entry_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "payload_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "source_entry_record": {"type": "object"},
+    "source_checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkpoint_hash", "merkle_root", "through_sequence"],
+      "properties": {
+        "checkpoint_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "merkle_root": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "through_sequence": {"type": "integer", "minimum": 1}
+      }
+    },
+    "hierarchy_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parent_domain_id", "parent_domain_checkpoint_hash", "committed_child_checkpoint_hash"],
+      "properties": {
+        "parent_domain_id": {"type": "string", "pattern": "^tst:domain:[A-Za-z0-9._~-]+$"},
+        "parent_domain_checkpoint_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "committed_child_checkpoint_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "inclusion_proof": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["side", "hash"],
+        "properties": {
+          "side": {"enum": ["left", "right"]},
+          "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "payload_disclosed", "payload"],
+      "properties": {
+        "mode": {"enum": ["digest_only", "full_payload"]},
+        "payload_disclosed": {"type": "boolean"},
+        "payload": {"type": ["object", "null"]}
+      }
+    },
+    "created_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "schema_version": {"const": "0.8"}
+  }
+}

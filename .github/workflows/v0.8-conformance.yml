@@ -1,0 +1,84 @@
+name: v0.8 Hierarchical Jurisdiction Conformance
+
+on:
+  push:
+    paths:
+      - 'schemas/v0.8/**'
+      - 'tools/v0_8_hierarchy.py'
+      - 'tools/v0_8_conformance.py'
+      - '.github/workflows/v0.8-conformance.yml'
+  pull_request:
+    paths:
+      - 'schemas/v0.8/**'
+      - 'tools/v0_8_hierarchy.py'
+      - 'tools/v0_8_conformance.py'
+      - '.github/workflows/v0.8-conformance.yml'
+  workflow_dispatch:
+
+jobs:
+  conformance:
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tstchain
+      - uses: actions/checkout@v4
+        with:
+          repository: KiYouJyo/ReferenceCity
+          ref: f810758d151a36747dbc7ccf11998f12d40bef4e
+          path: referencecity
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python-version }}'
+      - run: pip install -r tstchain/requirements-dev.txt -r referencecity/requirements-dev.txt
+      - run: python referencecity/tools/build_snapshot.py --output referencecity/data/core-v0.1/generated
+      - run: python tools/v0_1_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_2_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_3_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_4_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_5_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_6_conformance.py
+        working-directory: tstchain
+        env:
+          REFERENCECITY_ROOT: '${{ github.workspace }}/referencecity'
+      - run: python tools/v0_7_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_8_conformance.py
+        working-directory: tstchain
+      - run: python tools/referencecity_integration_check.py
+        working-directory: tstchain
+
+      # Preserve the v0.7 external benchmark as a regression gate while adding hierarchy.
+      - name: Build isolated ReferenceCity benchmark input
+        run: python referencecity/tools/build_benchmark_input.py --output '${{ github.workspace }}/rc-benchmark-input'
+      - name: Assert Ground Truth isolation
+        shell: bash
+        run: |
+          test ! -e '${{ github.workspace }}/rc-benchmark-input/expected'
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('${{ github.workspace }}/rc-benchmark-input')
+          manifest = json.loads((root/'benchmark-input.json').read_text())
+          assert manifest['ground_truth_included'] is False
+          assert manifest['scenario_count'] == 10
+          PY
+      - name: Run TSTChain v0.7 benchmark adapter
+        working-directory: tstchain
+        run: >-
+          python tools/referencecity_ledger_adapter.py
+          --benchmark '${{ github.workspace }}/rc-benchmark-input'
+          --output '${{ github.workspace }}/rc-observed'
+          --ledger-root '${{ github.workspace }}/rc-ledgers'
+      - name: Require ReferenceCity 10/10 regression score
+        run: >-
+          python referencecity/tools/compare_observed.py
+          --observed '${{ github.workspace }}/rc-observed'
+          --report '${{ github.workspace }}/referencecity-score.json'

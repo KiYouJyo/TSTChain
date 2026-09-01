@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.8:jurisdiction-domain",
+  "title": "TST Chain JurisdictionDomain v0.8",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["domain_id", "level", "jurisdiction_ref", "parent_domain_id", "ledger_id", "validator_set_id", "replication_policy", "data_residency", "schema_version"],
+  "properties": {
+    "domain_id": {"type": "string", "pattern": "^tst:domain:[A-Za-z0-9._~-]+$"},
+    "level": {"enum": ["local", "county", "city", "province", "national", "federation"]},
+    "jurisdiction_ref": {"type": "string", "minLength": 1},
+    "parent_domain_id": {"anyOf": [{"type": "string", "pattern": "^tst:domain:[A-Za-z0-9._~-]+$"}, {"type": "null"}]},
+    "ledger_id": {"type": "string", "pattern": "^tst:ledger:[A-Za-z0-9._~-]+$"},
+    "validator_set_id": {"type": "string", "pattern": "^tst:validator-set:[A-Za-z0-9._~-]+$"},
+    "replication_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "allowed_target_domains"],
+      "properties": {
+        "mode": {"enum": ["local_only", "proof_only", "selective", "full"]},
+        "allowed_target_domains": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^tst:domain:[A-Za-z0-9._~-]+$"}}
+      }
+    },
+    "data_residency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "raw_payload_export", "proof_export"],
+      "properties": {
+        "classification": {"enum": ["public", "internal", "restricted"]},
+        "raw_payload_export": {"enum": ["allowed", "denied"]},
+        "proof_export": {"enum": ["allowed", "required"]}
+      }
+    },
+    "schema_version": {"const": "0.8"}
+  }
+}
