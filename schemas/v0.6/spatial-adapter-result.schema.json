@@ -4,15 +4,25 @@
   "title": "TST Chain SpatialAdapterResult v0.6",
   "type": "object",
   "additionalProperties": false,
-  "required": ["adapter_result_id", "operation", "subject_ref", "constraint_ref", "relation", "evaluator", "source_assets", "subject_geometry_digest", "constraint_geometry_digest", "evaluated_at", "schema_version"],
+  "required": ["adapter_result_id", "operation", "subject_ref", "constraint_ref", "relation", "relation_value", "evaluator", "source_assets", "subject_geometry_digest", "constraint_geometry_digest", "evaluated_at", "schema_version"],
   "properties": {
     "adapter_result_id": {"type": "string", "pattern": "^tst:adapter-result:[A-Za-z0-9._~-]+$"},
     "operation": {"enum": ["intersects", "within", "contains", "disjoint"]},
     "subject_ref": {"type": "string", "minLength": 1},
     "constraint_ref": {"type": "string", "minLength": 1},
-    "relation": {"enum": ["intersects", "within", "contains", "disjoint"]},
-    "relation_value": {"type": "boolean"},
-    "intersection_area_decimal": {"type": ["string", "null"], "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"},
+    "relation": {
+      "description": "Observed coarse topological relation, independent of the requested operation. 'intersects' is the fallback for non-disjoint relations not classified as within or contains.",
+      "enum": ["intersects", "within", "contains", "disjoint"]
+    },
+    "relation_value": {
+      "type": "boolean",
+      "description": "Boolean result of the requested operation. Consumers MUST use this field for the requested predicate verdict."
+    },
+    "intersection_area_decimal": {
+      "type": ["string", "null"],
+      "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+      "description": "Optional intersection area in the source CRS coordinate-square units. Omit or set null when the CRS does not define meaningful planar area."
+    },
     "evaluator": {
       "type": "object",
       "additionalProperties": false,
