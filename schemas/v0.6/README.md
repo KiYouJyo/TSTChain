@@ -11,7 +11,7 @@ v0.6 defines the trust boundary between TST Chain and external spatial/data syst
 
 `operation` is the requested predicate (`intersects`, `within`, `contains`, or `disjoint`). `relation_value` is the authoritative boolean result for that requested predicate and is required.
 
-`relation` is a coarse observed topological classification independent of the requested predicate. The reference adapter classifies in this order: `disjoint`, `within`, `contains`, then `intersects` as the fallback for other non-disjoint relationships. A failed `within` or `contains` predicate MUST NOT be rewritten as `intersects` unless the observed geometry actually intersects.
+`relation` is the protocol relation supplied to downstream PlanningRule evaluation. For backward-compatible positive evidence, when `relation_value=true`, `relation` equals the requested `operation`. When the requested predicate is false, `relation` records an observed coarse topological relation (`disjoint`, `within`, `contains`, or fallback `intersects`) that explains why the predicate failed. This prevents the old error where every failed `within`/`contains` check was reported as `intersects` even when geometries were actually disjoint.
 
 `intersection_area_decimal` is optional evidence expressed in source-CRS coordinate-square units. It MUST NOT be interpreted as square metres unless the source CRS/profile explicitly establishes metre coordinates; implementations should omit it or use `null` when planar area is not meaningful.
 
