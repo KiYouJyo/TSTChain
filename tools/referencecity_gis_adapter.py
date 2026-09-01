@@ -88,7 +88,7 @@ def validate_geometry(geometry, label: str) -> None:
 
 
 def classify_relation(subject_geom, constraint_geom) -> str:
-    """Return a coarse observed relation independent of the requested predicate."""
+    """Return a coarse observed relation for explaining a failed predicate."""
     if subject_geom.disjoint(constraint_geom):
         return "disjoint"
     if subject_geom.within(constraint_geom):
@@ -148,7 +148,7 @@ def evaluate(
 
     evaluated_at = resolve_evaluated_at(evaluated_at)
     value = predicate_value(subject_geom, constraint_geom, operation)
-    relation = classify_relation(subject_geom, constraint_geom)
+    relation = operation if value else classify_relation(subject_geom, constraint_geom)
     intersection_area = subject_geom.intersection(constraint_geom).area
     area_text = format(intersection_area, ".6f").rstrip("0").rstrip(".") or "0"
 
