@@ -36,17 +36,21 @@ WorkflowDefinition / Instance / TransitionRequest / TransitionResult、权限/�
 ## v0.7 — Distributed Ledger Prototype — 核心完成
 - [x] append-only ledger + per-entry hash chain
 - [x] workflow commit / rejection atomic audit persistence
-- [x] evidence / provenance record
+- [x] evidence / provenance record + persisted digest verification
 - [x] auditable `state_seed` for benchmark/bootstrap state
 - [x] disposable state snapshot + full ledger replay recovery
 - [x] Merkle checkpoint
 - [x] Authority validator set
 - [x] Ed25519 quorum-signed finality（reference profile 2/3）
+- [x] checkpoint 对实际 ledger prefix 的 Merkle 反证
+- [x] trust-anchored `StateSyncBundle` finalized-prefix synchronization
+- [x] remote self-authorized validator-set rejection
+- [x] state-sync fork rejection / rollback rejection
 - [x] ReferenceCity S001–S010 isolated-input ledger adapter
 - [x] independent ReferenceCity evaluator 10/10 on Python 3.11–3.13
 - [x] native token / gas / mining dependency: NONE
 
-尚未把 v0.7 称为生产级分布式网络：多节点网络传输、成员变更、BFT fault model、远程状态同步和运维安全仍属于后续版本。
+尚未把 v0.7 称为生产级分布式网络：节点身份/peer authentication、validator-set 演进、checkpoint chain、BFT fault model、增量同步、多节点网络复制、崩溃恢复与运维安全仍属于后续收口或后续版本。
 
 ## v0.8 — Hierarchical & Jurisdictional Scaling — 当前阶段
 目标：把单一 ReferenceCity 账本扩展成符合国土空间治理层级与数据驻留要求的分层分域可信网络。
