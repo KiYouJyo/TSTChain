@@ -1,0 +1,31 @@
+{
+  "profile_id": "tst-referencecity-multidomain/0.8",
+  "referencecity_protocol_version": "0.1",
+  "referencecity_core_dataset_version": "0.1.0",
+  "referencecity_pin": "f810758d151a36747dbc7ccf11998f12d40bef4e",
+  "root_domain": {
+    "domain_id": "tst:domain:referencecity-city",
+    "jurisdiction_ref": "RC:CITY:001",
+    "level": "city"
+  },
+  "child_domains": [
+    {"domain_id": "tst:domain:referencecity-district-1", "jurisdiction_ref": "RC:DISTRICT:001", "level": "county"},
+    {"domain_id": "tst:domain:referencecity-district-2", "jurisdiction_ref": "RC:DISTRICT:002", "level": "county"},
+    {"domain_id": "tst:domain:referencecity-district-3", "jurisdiction_ref": "RC:DISTRICT:003", "level": "county"}
+  ],
+  "partition_rules": {
+    "spatial": "Walk parent_id toward RC:CITY:001; the first RC:DISTRICT:* ancestor owns the object. City-rooted/cross-city infrastructure remains in the city domain.",
+    "planning": "Resolve target_ids through spatial ownership. A single child-domain target inherits that domain; city-level, multi-domain, or unresolved targets remain in the city domain.",
+    "raw_data": "ReferenceCity source objects remain external. Domain ledgers store subject_ref plus RFC8785-JCS external_payload_digest commitments, never source geometry or full planning payloads."
+  },
+  "expected_source_counts": {"spatial_objects": 221, "planning_objects": 65, "total_objects": 286},
+  "required_properties": [
+    "every source object assigned exactly once",
+    "all three district domains non-empty",
+    "district checkpoints quorum-signed",
+    "city domain checkpoint commits all district checkpoints",
+    "district raw geometry absent from ledgers and cross-domain proofs",
+    "cross-district proof binds source entry, Merkle root, city commitment and validator delegation"
+  ],
+  "schema_version": "0.8"
+}
