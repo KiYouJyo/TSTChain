@@ -46,25 +46,49 @@ WorkflowDefinition / Instance / TransitionRequest / TransitionResult、权限/�
 - [x] independent ReferenceCity evaluator 10/10 on Python 3.11–3.13
 - [x] native token / gas / mining dependency: NONE
 
-尚未把 v0.7 称为生产级分布式网络：多节点网络传输、成员变更、BFT fault model、远程状态同步和运维安全仍属于后续版本。
+尚未把 v0.7 称为生产级分布式网络：多节点网络传输、BFT fault model、远程状态同步和运维安全仍属于后续版本。
 
-## v0.8 — Hierarchical & Jurisdictional Scaling — 当前阶段
+## v0.8 — Hierarchical & Jurisdictional Scaling — 协议/参考原型完成
 目标：把单一 ReferenceCity 账本扩展成符合国土空间治理层级与数据驻留要求的分层分域可信网络。
 
-- [ ] Domain / Jurisdiction descriptor
-- [ ] County/Domain → City → Province → National/Federation Root hierarchy
-- [ ] ledger partition / namespace isolation
-- [ ] local authoritative state + upper-level commitment
-- [ ] cross-domain proof envelope
-- [ ] hierarchical checkpoint aggregation
-- [ ] selective replication policy
-- [ ] data-residency / disclosure hooks
-- [ ] validator-set inheritance / delegation profile
-- [ ] cross-jurisdiction verification reference implementation
-- [ ] ReferenceCity multi-domain synthetic fixture and conformance
+- [x] Domain / Jurisdiction descriptor
+- [x] County/Domain → City → Province 分层承诺原型
+- [x] National/Federation 层级类型预留
+- [x] ledger partition / namespace isolation
+- [x] local authoritative state + upper-level commitment
+- [x] cross-domain proof envelope
+- [x] hierarchical checkpoint aggregation
+- [x] selective replication policy
+- [x] data-residency / disclosure hooks
+- [x] validator-set inheritance / delegation profile
+- [x] validator epoch handoff / stale signer rejection
+- [x] cross-jurisdiction verification reference implementation
+- [x] ReferenceCity multi-domain synthetic fixture and conformance
+- [x] ReferenceCity 221 spatial + 65 planning = 286 objects exact-once partition
+- [x] 1 city + 3 district authoritative ledgers / checkpoints
+- [x] district-to-district digest-only proof anchored by city checkpoint
+- [x] Python 3.11–3.13 v0.1–v0.8 regression + ReferenceCity 10/10 regression
 
-## v0.9 — Knowledge Graph & Planning AI Foundation
-Spatial knowledge graph、Object–Rule–Event–Authority graph、provenance query、AI/RAG evidence package、可验证引用与规划问答。
+v0.8 当前是**协议与参考原型完成**，不是全国生产网络：National/Federation 实例、多节点传输、真实跨机关部署、密钥托管、容灾和 BFT 网络仍需后续工程验证。
+
+## v0.9 — Knowledge Graph & Planning AI Foundation — 当前阶段
+目标：把已经可验证的 Object / Rule / Event / Authority / Provenance / Domain 事实组织成**可追溯、可版本化、可由 AI 安全引用的规划知识图谱**。v0.9 不先做聊天机器人，而先固定图谱事实、查询语义与 Evidence Package。
+
+- [ ] GraphNode / GraphEdge 稳定 Schema
+- [ ] Object–Rule–Event–Authority–Domain 关系词表
+- [ ] ledger/checkpoint anchored graph snapshot
+- [ ] deterministic graph materializer（账本事实 → 图谱）
+- [ ] current / historical / superseded temporal views
+- [ ] provenance traversal query
+- [ ] rule-causality query（为什么被拒绝 / 哪条规则导致）
+- [ ] authority query（谁在何时以什么权限作出决定）
+- [ ] cross-domain proof-backed graph edge
+- [ ] VerifiableReference / EvidencePackage
+- [ ] EvidencePackage 完整性 Hash + checkpoint anchors
+- [ ] RAG/AI citation package（只暴露获授权事实/摘要）
+- [ ] ReferenceCity deterministic graph fixture
+- [ ] ReferenceCity 查询基准：S004/S006/S007/S009 等可解释性问答
+- [ ] Python 3.11–3.13 conformance + v0.1–v0.8 + ReferenceCity 10/10 regression
 
 ## v1.0
 稳定核心 Schema、五大模型、签名/Hash/版本、可插拔账本、GIS/TIM/CSPON/BIM 适配、分层分域原型、完整测试与安全模型。
