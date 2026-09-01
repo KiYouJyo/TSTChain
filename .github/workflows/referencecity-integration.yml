@@ -6,12 +6,19 @@ on:
       - 'integrations/referencecity/**'
       - 'docs/**/REFERENCECITY.md'
       - 'tools/referencecity_integration_check.py'
+      - 'tools/v0_3_conformance.py'
+      - 'tools/v0_4_conformance.py'
+      - 'tools/v0_5_conformance.py'
       - '.github/workflows/referencecity-integration.yml'
   pull_request:
     paths:
       - 'integrations/referencecity/**'
       - 'docs/**/REFERENCECITY.md'
       - 'tools/referencecity_integration_check.py'
+      - 'tools/v0_3_conformance.py'
+      - 'tools/v0_4_conformance.py'
+      - 'tools/v0_5_conformance.py'
+  workflow_dispatch:
 
 jobs:
   check:
@@ -22,6 +29,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements-dev.txt
-      - run: python tools/referencecity_integration_check.py
       - run: python tools/v0_1_conformance.py
       - run: python tools/v0_2_conformance.py
+      - run: python tools/v0_3_conformance.py
+      - run: python tools/v0_4_conformance.py
+      - run: python tools/v0_5_conformance.py
+      - run: python tools/referencecity_integration_check.py
