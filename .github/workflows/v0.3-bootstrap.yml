@@ -29,16 +29,24 @@ jobs:
         run: python tools/v0_1_conformance.py
       - name: Run v0.2 regression
         run: python tools/v0_2_conformance.py
-      - name: Diagnose v0.3 vectors
+      - name: Diagnose every v0.3 hash vector
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
           import tools.v0_3_conformance as c
           vectors=json.loads(Path('test-vectors/v0.3/planning-rule-vectors.json').read_text())
-          for item in vectors['rules']:
-              actual=c.sha256_hex(json.loads(Path(item['path']).read_text()))
-              print(item['path'], actual, item['expected_sha256'], 'OK' if actual==item['expected_sha256'] else 'MISMATCH')
+          def walk(value, keypath='root'):
+              if isinstance(value, dict):
+                  if isinstance(value.get('path'), str) and isinstance(value.get('expected_sha256'), str):
+                      path=value['path']
+                      actual=c.sha256_hex(json.loads(Path(path).read_text()))
+                      state='OK' if actual==value['expected_sha256'] else 'MISMATCH'
+                      print(f"{keypath}: {path} actual={actual} expected={value['expected_sha256']} {state}")
+                  for k,v in value.items(): walk(v, f'{keypath}.{k}')
+              elif isinstance(value, list):
+                  for i,v in enumerate(value): walk(v, f'{keypath}[{i}]')
+          walk(vectors)
           PY
       - name: Run v0.3 conformance
         run: python tools/v0_3_conformance.py
@@ -50,4 +58,4 @@ jobs:
           git commit -m "feat(v0.3): implement planning rule protocol"
           git push origin HEAD:codex/v0.3-planning-rule
 
-# bootstrap-trigger: 3
+# bootstrap-trigger: 4
