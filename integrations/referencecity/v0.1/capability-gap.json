@@ -1,19 +1,20 @@
 {
-  "as_of_tstchain_version":"0.6",
+  "as_of_tstchain_version":"0.7",
   "benchmark":"ReferenceCity S001-S010 / protocol 0.1",
-  "end_to_end_ready":false,
-  "status_definition":{"full":"scenario can execute end-to-end with persistent authoritative state","partial":"primary protocol verdict/model exists but an external adapter or persistent ledger is still missing","unsupported":"TST cannot yet produce the scenario's primary verdict"},
-  "summary":{"full":0,"partial":10,"unsupported":0},
+  "end_to_end_ready":true,
+  "status_definition":{"full":"scenario executes end-to-end against the persistent authoritative ledger and matches ReferenceCity expected output","partial":"primary protocol verdict/model exists but a required external adapter or persistent execution path is still missing","unsupported":"TST cannot yet produce the scenario's primary verdict"},
+  "summary":{"full":10,"partial":0,"unsupported":0},
+  "verification":{"runner":"tools/referencecity_v0_7_benchmark.py","referencecity_ref":"f810758d151a36747dbc7ccf11998f12d40bef4e","python_versions":["3.11","3.12","3.13"],"persistent_replay":true,"quorum_finality":true,"checkpoint_bound_state_sync":true},
   "scenarios":[
-    {"scenario":"S001","name":"plan registration","status":"partial","available_foundation":["v0.2 Authority","v0.4 PlanArtifact/PlanVersion","v0.5 Workflow create transaction"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S002","name":"authorized version update","status":"partial","available_foundation":["v0.2 Authority","v0.4 Provenance","v0.5 Workflow version increment"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S003","name":"review approval activation","status":"partial","available_foundation":["v0.2 Authority/Signature","v0.5 Workflow review/approve/activate"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S004","name":"unauthorized modification","status":"partial","available_foundation":["v0.2 AuthorizationDecision","v0.5 Workflow authorization gate"],"missing":["persistent audit ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S005","name":"approved document tamper detection","status":"partial","available_foundation":["v0.1 Evidence digest","v0.2 AuditRecord","external canonicalization boundary"],"missing":["ledger-integrated evidence history"],"target_versions":["v0.7"]},
-    {"scenario":"S006","name":"planning constraint conflict","status":"partial","available_foundation":["v0.3 PlanningRule","v0.5 rule gate"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S007","name":"controlled-boundary spatial conflict","status":"partial","available_foundation":["v0.3 SpatialEvaluation","v0.3 PlanningRule","v0.5 rule gate","v0.6 ReferenceCity GIS adapter","v0.6 real geometry integration"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S008","name":"missing required signature","status":"partial","available_foundation":["v0.2 signature verification","v0.5 required-signature gate"],"missing":["persistent state transaction"],"target_versions":["v0.7"]},
-    {"scenario":"S009","name":"historical version verification","status":"partial","available_foundation":["v0.4 HistoricalVersionVerification"],"missing":["historical ledger/checkpoint persistence"],"target_versions":["v0.7"]},
-    {"scenario":"S010","name":"optimistic concurrency version conflict","status":"partial","available_foundation":["v0.5 expected_version precondition","v0.5 VERSION_CONFLICT","v0.5 idempotency"],"missing":["persistent ledger atomicity"],"target_versions":["v0.7"]}
+    {"scenario":"S001","name":"plan registration","status":"full","execution_path":["v0.2 Authority","v0.4 PlanArtifact/PlanVersion","v0.5 Workflow create","v0.7 persistent workflow commit","ledger replay","quorum checkpoint"],"missing":[]},
+    {"scenario":"S002","name":"authorized version update","status":"full","execution_path":["v0.2 Authority","v0.4 Provenance","v0.5 Workflow version increment","v0.7 persistent v1->v2 transition","ledger history","quorum checkpoint"],"missing":[]},
+    {"scenario":"S003","name":"review approval activation","status":"full","execution_path":["v0.2 Authority/Signature","v0.5 review->approve->activate","v0.7 persistent submitted/v1 lifecycle","ledger replay","quorum checkpoint"],"missing":[]},
+    {"scenario":"S004","name":"unauthorized modification","status":"full","execution_path":["v0.2 AuthorizationDecision","v0.5 authorization gate","v0.7 persistent workflow rejection","no state mutation","audit replay"],"missing":[]},
+    {"scenario":"S005","name":"approved document tamper detection","status":"full","execution_path":["v0.1 Evidence digest","RFC8785-JCS approved/tampered document hashing","v0.7 approved evidence persistence","v0.7 HASH_MISMATCH verification","audit persistence"],"missing":[]},
+    {"scenario":"S006","name":"planning constraint conflict","status":"full","execution_path":["v0.3 farmland PlanningRule evaluator","v0.3 RuleEvaluationResult","v0.5 rule gate","v0.7 evidence persistence","v0.7 persistent workflow rejection"],"missing":[]},
+    {"scenario":"S007","name":"controlled-boundary spatial conflict","status":"full","execution_path":["v0.6 ReferenceCity geometry adapter","Shapely spatial evaluation","v0.3 ecological PlanningRule","v0.5 project rule gate","v0.7 evidence persistence","v0.7 persistent workflow rejection"],"missing":[]},
+    {"scenario":"S008","name":"missing required signature","status":"full","execution_path":["v0.2 signature model","v0.5 required-signature gate","v0.7 persistent rejection","no state mutation","ledger replay"],"missing":[]},
+    {"scenario":"S009","name":"historical version verification","status":"full","execution_path":["v0.4 PlanVersion/Provenance","v0.7 v1 provenance persistence","v0.7 v2 amendment persistence","v0.7 historical digest verification","quorum checkpoint"],"missing":[]},
+    {"scenario":"S010","name":"optimistic concurrency version conflict","status":"full","execution_path":["v0.5 expected_version precondition","v0.5 VERSION_CONFLICT","v0.7 authoritative v2 persistence","v0.7 stale-request rejection","no rollback"],"missing":[]}
   ]
 }
