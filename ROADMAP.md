@@ -17,7 +17,7 @@ PlanningRule / RuleSet / RuleEvaluation / SpatialEvaluation 已完成，S006/S00
 PlanArtifact / PlanVersion / ProvenanceEdge / HistoricalVersionVerification 已完成，S001/S002/S009 的版本和历史模型已建立。
 
 ## ReferenceCity 验收基线
-截至 v0.5，S001–S010 已达到 **0 full / 10 partial / 0 unsupported**。所有场景的主协议判定均已具备；`full` 仍要求 v0.7 的持久权威状态，因此现在不人为宣称端到端链 PASS。
+截至 v0.6 GIS slice，S001–S010 仍为 **0 full / 10 partial / 0 unsupported**。所有场景的主协议判定均已具备，S007 已由真实 ReferenceCity geometry 驱动外部 GIS evaluator；`full` 仍要求 v0.7 的持久权威状态，因此现在不人为宣称端到端链 PASS。
 
 ## v0.5 — Workflow — 协议候选实现完成
 - [x] WorkflowDefinition / states / transitions；
@@ -32,17 +32,21 @@ PlanArtifact / PlanVersion / ProvenanceEdge / HistoricalVersionVerification 已�
 - [x] ReferenceCity S001/S002/S003/S004/S006/S008/S010 protocol mappings；
 - [x] Python 3.11–3.13 conformance + v0.1–v0.4 regression。
 
-## v0.6 — Interoperability — 下一阶段
-目标：让 S007 从“已注入空间关系证据”升级为由真实适配器对 ReferenceCity geometry 产生证据，同时建立通用的“数据不上链，证据与关系上链”输入层。
+## v0.6 — Interoperability — GIS/GeoJSON slice 完成协议候选
+目标：建立通用的“数据不上链，证据与关系上链”输入层。首个 slice 已将 S007 从预注入空间关系证据升级为真实 ReferenceCity geometry 计算。
 
-- [ ] ExternalAssetDescriptor / canonicalization profile
-- [ ] GeoJSON geometry adapter
+- [x] ExternalSpatialAsset / canonicalization profile
+- [x] GeoJSON / generated JSON geometry adapter
 - [ ] GeoPackage adapter contract
-- [ ] `SpatialEvaluation` reference evaluator
+- [x] `SpatialEvaluation` reference evaluator
+- [x] ReferenceCity S007 geometry → Shapely → PlanningRule → Workflow integration test
+- [x] RFC8785-JCS external ordered-JSON boundary regression
 - [ ] TIM / CSPON mapping profile
 - [ ] BIM / IFC reference profile
 - [ ] document / raster evidence descriptor
-- [ ] ReferenceCity S007 geometry → SpatialEvaluation integration test
+- [ ] REST / OpenAPI gateway
+
+**原则**：Shapely 只是参考适配器，不是协议依赖。生产系统可替换为 PostGIS、QGIS、ArcGIS 或其他 GIS 引擎，只要产生同一 v0.6 证据契约。
 
 ## v0.7 — Distributed Ledger Prototype
 Append-only ledger、Merkle commitment、Authority validator set、finality、snapshot/checkpoint/state sync、atomic transition + audit persistence，并真正运行 ReferenceCity S001–S010 evaluator。

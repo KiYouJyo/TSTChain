@@ -1,0 +1,56 @@
+name: v0.6 GIS Interoperability Conformance
+
+on:
+  push:
+    paths:
+      - 'schemas/v0.6/**'
+      - 'examples/v0.6/**'
+      - 'tools/referencecity_gis_adapter.py'
+      - 'tools/v0_6_conformance.py'
+      - 'requirements-dev.txt'
+      - '.github/workflows/v0.6-conformance.yml'
+  pull_request:
+    paths:
+      - 'schemas/v0.6/**'
+      - 'examples/v0.6/**'
+      - 'tools/referencecity_gis_adapter.py'
+      - 'tools/v0_6_conformance.py'
+      - 'requirements-dev.txt'
+  workflow_dispatch:
+
+jobs:
+  conformance:
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tstchain
+      - uses: actions/checkout@v4
+        with:
+          repository: KiYouJyo/ReferenceCity
+          ref: f810758d151a36747dbc7ccf11998f12d40bef4e
+          path: referencecity
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python-version }}'
+      - run: pip install -r tstchain/requirements-dev.txt -r referencecity/requirements-dev.txt
+      - run: python referencecity/tools/build_snapshot.py --output referencecity/data/core-v0.1/generated
+      - run: python tools/v0_1_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_2_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_3_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_4_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_5_conformance.py
+        working-directory: tstchain
+      - run: python tools/v0_6_conformance.py
+        working-directory: tstchain
+        env:
+          REFERENCECITY_ROOT: '${{ github.workspace }}/referencecity'
+      - run: python tools/referencecity_integration_check.py
+        working-directory: tstchain

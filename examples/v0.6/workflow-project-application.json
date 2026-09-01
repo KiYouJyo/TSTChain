@@ -1,0 +1,20 @@
+{
+  "workflow_id": "tst:workflow:referencecity-project-application",
+  "states": ["submitted", "accepted"],
+  "initial_state": "submitted",
+  "transitions": [
+    {
+      "transition_id": "tst:wf-transition:submit-project-application",
+      "from_state": null,
+      "to_state": "submitted",
+      "action": "submit_project_application",
+      "required_permissions": ["project.submit"],
+      "document_requirement": "none",
+      "signature_required": false,
+      "rule_gate": "pass_required",
+      "version_effect": "create",
+      "audit_event": "verify"
+    }
+  ],
+  "schema_version": "0.5"
+}

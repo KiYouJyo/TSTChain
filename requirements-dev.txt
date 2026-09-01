@@ -1,2 +1,4 @@
 jsonschema[format]>=4.23,<5
 cryptography>=45,<47
+rfc8785>=0.1.4,<1
+shapely>=2.0,<3
