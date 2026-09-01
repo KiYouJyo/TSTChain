@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""TST Chain v0.7 persistent ledger conformance."""
+"""TST Chain v0.7 persistent ledger and state-sync conformance."""
 from __future__ import annotations
 
 import copy
 import json
-import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -14,7 +13,14 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from jsonschema import Draft202012Validator, FormatChecker
 
 from v0_5_conformance import req
-from v0_7_ledger import LedgerStore, b64u
+from v0_7_ledger import (
+    LedgerStore,
+    b64u,
+    checkpoint_body,
+    entry_core,
+    sha256_hex,
+    sync_bundle_body,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SD = ROOT / "schemas" / "v0.7"
@@ -41,7 +47,13 @@ def validator_fixture():
         public = private.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
         private_keys[actor] = private
         members.append({"actor_id": actor, "key_id": key_id, "algorithm": "ed25519", "public_key": b64u(public)})
-    return {"validator_set_id": "tst:validator-set:referencecity-v0.7", "members": members, "quorum": 2, "status": "active", "schema_version": "0.7"}, private_keys
+    return {
+        "validator_set_id": "tst:validator-set:referencecity-v0.7",
+        "members": members,
+        "quorum": 2,
+        "status": "active",
+        "schema_version": "0.7",
+    }, private_keys
 
 
 def advance_to_effective(store: LedgerStore, definition: dict, name: str, subject: str) -> None:
@@ -59,10 +71,25 @@ def advance_to_effective(store: LedgerStore, definition: dict, name: str, subjec
     assert store.instances[instance]["current_state"] == "effective"
 
 
+def rebuild_hash_chain(entries: list[dict]) -> None:
+    previous = None
+    for index, entry in enumerate(entries, 1):
+        entry["sequence"] = index
+        entry["previous_entry_hash"] = previous
+        entry["payload_digest"] = {
+            "algorithm": "sha256",
+            "digest": sha256_hex(entry["payload"]),
+            "canonicalization": "RFC8785-JCS",
+        }
+        entry["entry_hash"] = sha256_hex(entry_core(entry))
+        previous = entry["entry_hash"]
+
+
 def main() -> int:
     definition = load(DEFN)
     validators, private_keys = validator_fixture()
     validate("validator-set.schema.json", validators)
+    Draft202012Validator.check_schema(load(SD / "state-sync-bundle.schema.json"))
 
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp) / "node"
@@ -78,19 +105,19 @@ def main() -> int:
         assert replay["idempotent_replay"] is True and len(store.entries) == before
 
         # S004: denied action is audit-persistent but cannot mutate state.
-        denied = req("ledger-s004", "open_amendment", "tst:wf-instance:ledger-s001", "RC:PLAN:0003", "1", "plan.amend", decision="deny", rules=[{"evaluation_ref": "x", "outcome": "pass"}])
+        denied = req("ledger-s004", "open_amendment", create["instance_id"], create["subject_ref"], "1", "plan.amend", decision="deny", rules=[{"evaluation_ref": "x", "outcome": "pass"}])
         denied_result = store.commit_workflow(definition, denied, "2030-04-01T00:00:03Z")
         assert denied_result["semantic_code"] == "UNAUTHORIZED"
         assert store.entries[-1]["entry_type"] == "workflow_rejection"
         assert store.instances[create["instance_id"]]["current_version"] == "1"
 
-        # S008: a required-signature failure is persisted without state mutation.
+        # S008: required-signature failure is persisted without state mutation.
         missing_sig = req("ledger-s008", "submit_plan", create["instance_id"], create["subject_ref"], "1", "plan.submit", docs=["RC:DOC:000001"], sigs=[])
         missing_result = store.commit_workflow(definition, missing_sig, "2030-04-01T00:00:04Z")
         assert missing_result["semantic_code"] == "MISSING_SIGNATURE"
         assert store.instances[create["instance_id"]]["current_state"] == "draft"
 
-        # Build a real effective plan then amend it: history retains v1 while current becomes v2.
+        # S002 + history: real v1 becomes effective, amendment creates v2, both remain in ledger history.
         advance_to_effective(store, definition, "ledger-history", "RC:PLAN:0001")
         history_instance = "tst:wf-instance:ledger-history"
         amend = req("ledger-s002", "open_amendment", history_instance, "RC:PLAN:0001", "1", "plan.amend", rules=[{"evaluation_ref": "tst:rule-evaluation:s002", "outcome": "pass"}])
@@ -106,18 +133,18 @@ def main() -> int:
         assert stale_result["semantic_code"] == "VERSION_CONFLICT"
         assert store.instances[history_instance]["current_version"] == "2"
 
-        # S006-style rule rejection on another effective plan proves rejected rule gates are durable.
+        # S006-style rule rejection proves rejected rule gates are durable.
         advance_to_effective(store, definition, "ledger-rule", "RC:PLAN:0004")
         conflict = req("ledger-s006", "open_amendment", "tst:wf-instance:ledger-rule", "RC:PLAN:0004", "1", "plan.amend", rules=[{"evaluation_ref": "tst:rule-evaluation:referencecity-s006", "outcome": "fail"}])
         conflict_result = store.commit_workflow(definition, conflict, "2030-04-01T00:02:00Z")
         assert conflict_result["semantic_code"] == "RULE_CONFLICT"
         assert store.instances["tst:wf-instance:ledger-rule"]["current_version"] == "1"
 
-        # S005: evidence is hash-bound; modifying stored payload bytes without rebuilding the chain is detected.
+        # S005: modifying stored evidence without rebuilding the chain is detected.
         store.record_evidence({"evidence_id": "tst:evidence:referencecity-s005", "content_digest": "a" * 64, "status": "approved"}, "2030-04-01T00:03:00Z")
         tampered_root = Path(tmp) / "tampered"
         tampered_root.mkdir()
-        rows = [json.loads(line) for line in store.ledger_path.read_text(encoding="utf-8").splitlines()]
+        rows = copy.deepcopy(store.entries)
         rows[-1]["payload"]["content_digest"] = "b" * 64
         (tampered_root / "ledger.jsonl").write_text("".join(json.dumps(row, separators=(",", ":")) + "\n" for row in rows), encoding="utf-8")
         try:
@@ -126,28 +153,65 @@ def main() -> int:
         except ValueError:
             pass
 
-        # Snapshot is disposable cache: delete it, restart, and recover identical authoritative state from ledger.
+        # Snapshot is disposable cache: restart reconstructs identical authoritative state from ledger.
         state_before = copy.deepcopy(store.instances)
         store.snapshot_path.unlink()
         recovered = LedgerStore(root)
         assert recovered.instances == state_before
         assert recovered.snapshot_path.exists()
 
-        # Quorum-signed Merkle checkpoint establishes finality for all current entries.
+        # Quorum checkpoint must verify against both signatures and the actual ledger Merkle root.
         checkpoint = recovered.checkpoint(validators, private_keys, "2030-04-01T00:04:00Z")
         validate("checkpoint.schema.json", checkpoint)
-        LedgerStore.verify_checkpoint(checkpoint, validators)
+        LedgerStore.verify_checkpoint(checkpoint, validators, recovered.entries)
         assert checkpoint["through_sequence"] == len(recovered.entries)
         assert len(checkpoint["approvals"]) >= validators["quorum"]
 
-        # Removing one approval drops below quorum and must invalidate finality.
         nonfinal = copy.deepcopy(checkpoint)
         nonfinal["approvals"] = nonfinal["approvals"][:1]
-        from v0_7_ledger import sha256_hex, checkpoint_body
         nonfinal["checkpoint_hash"] = sha256_hex(checkpoint_body(nonfinal))
         try:
-            LedgerStore.verify_checkpoint(nonfinal, validators)
+            LedgerStore.verify_checkpoint(nonfinal, validators, recovered.entries)
             raise AssertionError("non-quorum checkpoint was accepted")
+        except ValueError:
+            pass
+
+        # State sync: a fresh node accepts only an exact finalized prefix bound by the signed checkpoint.
+        bundle = recovered.export_sync_bundle(checkpoint, validators)
+        assert bundle["bundle_hash"] == sha256_hex(sync_bundle_body(bundle))
+        for entry in bundle["entries"]:
+            validate("ledger-entry.schema.json", entry)
+        validate("checkpoint.schema.json", bundle["checkpoint"])
+        validate("validator-set.schema.json", bundle["validator_set"])
+        replica = LedgerStore.import_sync_bundle(Path(tmp) / "replica", bundle)
+        assert [e["entry_hash"] for e in replica.entries] == [e["entry_hash"] for e in recovered.entries]
+        assert replica.instances == recovered.instances
+
+        # Even an attacker who rebuilds every entry hash and the outer bundle hash cannot keep the old signed Merkle checkpoint valid.
+        forged = copy.deepcopy(bundle)
+        forged["entries"][0]["payload"]["request"]["subject_ref"] = "RC:PLAN:FORGED"
+        rebuild_hash_chain(forged["entries"])
+        forged["bundle_hash"] = sha256_hex(sync_bundle_body(forged))
+        try:
+            LedgerStore.import_sync_bundle(Path(tmp) / "forged", forged)
+            raise AssertionError("forged finalized prefix was accepted")
+        except ValueError:
+            pass
+
+        # A local fork is never overwritten by state sync.
+        fork = LedgerStore(Path(tmp) / "fork")
+        fork.record_evidence({"evidence_id": "tst:evidence:fork", "content_digest": "f" * 64}, "2030-04-01T00:00:00Z")
+        try:
+            LedgerStore.import_sync_bundle(fork.root, bundle)
+            raise AssertionError("state sync overwrote a local fork")
+        except ValueError:
+            pass
+
+        # A finalized-prefix import cannot roll a node back after it has appended newer local entries.
+        replica.record_evidence({"evidence_id": "tst:evidence:newer", "content_digest": "c" * 64}, "2030-04-01T00:05:00Z")
+        try:
+            LedgerStore.import_sync_bundle(replica.root, bundle)
+            raise AssertionError("state sync rolled back a longer local ledger")
         except ValueError:
             pass
 
@@ -158,6 +222,7 @@ def main() -> int:
     print("  append-only hash chain + audit persistence: PASS")
     print("  snapshot deletion + ledger replay recovery: PASS")
     print("  Merkle checkpoint + Ed25519 validator quorum finality: PASS")
+    print("  checkpoint-bound state sync + fork/rollback rejection: PASS")
     print("  native token / gas / mining dependency: NONE")
     return 0
 
