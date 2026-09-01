@@ -182,6 +182,64 @@ class LedgerStore:
     def record_provenance(self, payload: dict, committed_at: str) -> dict:
         return self.append("provenance_record", payload, committed_at)
 
+    def _latest_record(self, entry_type: str, id_key: str, record_id: str, required_status: str | None = None) -> dict | None:
+        for entry in reversed(self.entries):
+            if entry["entry_type"] != entry_type:
+                continue
+            payload = entry["payload"]
+            if payload.get(id_key) != record_id:
+                continue
+            if required_status is not None and payload.get("status") != required_status:
+                continue
+            return entry
+        return None
+
+    def verify_evidence_digest(self, evidence_id: str, current_digest: str, committed_at: str) -> dict:
+        approved = self._latest_record("evidence_record", "evidence_id", evidence_id, "approved")
+        if approved is None or not isinstance(approved["payload"].get("content_digest"), str):
+            raise ValueError("approved evidence record not found")
+        expected = approved["payload"]["content_digest"]
+        match = expected == current_digest
+        result = {
+            "verification_id": f"tst:evidence-verification:{len(self.entries) + 1:012d}",
+            "evidence_id": evidence_id,
+            "accepted": match,
+            "state_changed": False,
+            "hash_match": match,
+            "expected_content_digest": expected,
+            "actual_content_digest": current_digest,
+            "semantic_code": "OK" if match else "HASH_MISMATCH",
+            "audit_event": "verify",
+            "approved_entry_hash": approved["entry_hash"],
+            "verified_at": committed_at,
+            "schema_version": "0.7",
+        }
+        self.record_evidence({"verification": result}, committed_at)
+        return result
+
+    def verify_provenance_digest(self, provenance_id: str, expected_digest: str, committed_at: str) -> dict:
+        record = self._latest_record("provenance_record", "provenance_id", provenance_id)
+        exists = record is not None and isinstance(record["payload"].get("content_digest"), str)
+        actual = record["payload"]["content_digest"] if exists else None
+        match = bool(exists and actual == expected_digest)
+        result = {
+            "verification_id": f"tst:provenance-verification:{len(self.entries) + 1:012d}",
+            "provenance_id": provenance_id,
+            "accepted": match,
+            "state_changed": False,
+            "exists": exists,
+            "hash_match": match,
+            "expected_content_digest": expected_digest,
+            "actual_content_digest": actual,
+            "semantic_code": "OK" if match else ("HASH_MISMATCH" if exists else "NOT_FOUND"),
+            "audit_event": "verify",
+            "record_entry_hash": record["entry_hash"] if record else None,
+            "verified_at": committed_at,
+            "schema_version": "0.7",
+        }
+        self.record_provenance({"verification": result}, committed_at)
+        return result
+
     def history(self, subject_ref: str) -> list[dict]:
         out = []
         for entry in self.entries:
