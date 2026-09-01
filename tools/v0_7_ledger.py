@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Minimal persistent ledger reference implementation for TST Chain v0.7."""
+"""Persistent ledger reference implementation for TST Chain v0.7."""
 from __future__ import annotations
 
 import base64
@@ -64,6 +64,31 @@ def checkpoint_body(checkpoint: dict) -> dict:
     return {key: value for key, value in checkpoint.items() if key != "checkpoint_hash"}
 
 
+def sync_bundle_body(bundle: dict) -> dict:
+    return {key: value for key, value in bundle.items() if key != "bundle_hash"}
+
+
+def verify_entries(entries: list[dict], ledger_id: str) -> None:
+    previous = None
+    for index, entry in enumerate(entries, 1):
+        if entry["ledger_id"] != ledger_id:
+            raise ValueError("ledger id mismatch")
+        if entry["sequence"] != index:
+            raise ValueError("sequence mismatch")
+        if entry["previous_entry_hash"] != previous:
+            raise ValueError("hash-chain predecessor mismatch")
+        expected_digest = {
+            "algorithm": "sha256",
+            "digest": sha256_hex(entry["payload"]),
+            "canonicalization": "RFC8785-JCS",
+        }
+        if entry["payload_digest"] != expected_digest:
+            raise ValueError("payload digest mismatch")
+        if entry["entry_hash"] != sha256_hex(entry_core(entry)):
+            raise ValueError("entry hash mismatch")
+        previous = entry["entry_hash"]
+
+
 class LedgerStore:
     def __init__(self, root: Path, ledger_id: str = "tst:ledger:referencecity"):
         self.root = Path(root)
@@ -83,19 +108,7 @@ class LedgerStore:
         return [json.loads(line) for line in self.ledger_path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
     def verify(self) -> None:
-        previous = None
-        for index, entry in enumerate(self.entries, 1):
-            if entry["ledger_id"] != self.ledger_id:
-                raise ValueError("ledger id mismatch")
-            if entry["sequence"] != index:
-                raise ValueError("sequence mismatch")
-            if entry["previous_entry_hash"] != previous:
-                raise ValueError("hash-chain predecessor mismatch")
-            if entry["payload_digest"] != {"algorithm": "sha256", "digest": sha256_hex(entry["payload"]), "canonicalization": "RFC8785-JCS"}:
-                raise ValueError("payload digest mismatch")
-            if entry["entry_hash"] != sha256_hex(entry_core(entry)):
-                raise ValueError("entry hash mismatch")
-            previous = entry["entry_hash"]
+        verify_entries(self.entries, self.ledger_id)
 
     def _replay(self) -> None:
         self.instances = {}
@@ -141,13 +154,23 @@ class LedgerStore:
             "entry_type": entry_type,
             "previous_entry_hash": previous,
             "payload": copy.deepcopy(payload),
-            "payload_digest": {"algorithm": "sha256", "digest": sha256_hex(payload), "canonicalization": "RFC8785-JCS"},
+            "payload_digest": {
+                "algorithm": "sha256",
+                "digest": sha256_hex(payload),
+                "canonicalization": "RFC8785-JCS",
+            },
             "committed_at": committed_at,
             "schema_version": "0.7",
         }
         entry["entry_hash"] = sha256_hex(entry)
         new_entries = self.entries + [entry]
-        atomic_text(self.ledger_path, "".join(json.dumps(item, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n" for item in new_entries))
+        atomic_text(
+            self.ledger_path,
+            "".join(
+                json.dumps(item, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+                for item in new_entries
+            ),
+        )
         self.entries = new_entries
         self.verify()
         self._replay()
@@ -179,6 +202,70 @@ class LedgerStore:
     def record_provenance(self, payload: dict, committed_at: str) -> dict:
         return self.append("provenance_record", payload, committed_at)
 
+    def _latest_record(
+        self,
+        entry_type: str,
+        id_key: str,
+        record_id: str,
+        required_status: str | None = None,
+    ) -> dict | None:
+        for entry in reversed(self.entries):
+            if entry["entry_type"] != entry_type:
+                continue
+            payload = entry["payload"]
+            if payload.get(id_key) != record_id:
+                continue
+            if required_status is not None and payload.get("status") != required_status:
+                continue
+            return entry
+        return None
+
+    def verify_evidence_digest(self, evidence_id: str, current_digest: str, committed_at: str) -> dict:
+        approved = self._latest_record("evidence_record", "evidence_id", evidence_id, "approved")
+        if approved is None or not isinstance(approved["payload"].get("content_digest"), str):
+            raise ValueError("approved evidence record not found")
+        expected = approved["payload"]["content_digest"]
+        match = expected == current_digest
+        result = {
+            "verification_id": f"tst:evidence-verification:{len(self.entries) + 1:012d}",
+            "evidence_id": evidence_id,
+            "accepted": match,
+            "state_changed": False,
+            "hash_match": match,
+            "expected_content_digest": expected,
+            "actual_content_digest": current_digest,
+            "semantic_code": "OK" if match else "HASH_MISMATCH",
+            "audit_event": "verify",
+            "approved_entry_hash": approved["entry_hash"],
+            "verified_at": committed_at,
+            "schema_version": "0.7",
+        }
+        self.record_evidence({"verification": result}, committed_at)
+        return result
+
+    def verify_provenance_digest(self, provenance_id: str, expected_digest: str, committed_at: str) -> dict:
+        record = self._latest_record("provenance_record", "provenance_id", provenance_id)
+        exists = record is not None and isinstance(record["payload"].get("content_digest"), str)
+        actual = record["payload"]["content_digest"] if exists else None
+        match = bool(exists and actual == expected_digest)
+        result = {
+            "verification_id": f"tst:provenance-verification:{len(self.entries) + 1:012d}",
+            "provenance_id": provenance_id,
+            "accepted": match,
+            "state_changed": False,
+            "exists": exists,
+            "hash_match": match,
+            "expected_content_digest": expected_digest,
+            "actual_content_digest": actual,
+            "semantic_code": "OK" if match else ("HASH_MISMATCH" if exists else "NOT_FOUND"),
+            "audit_event": "verify",
+            "record_entry_hash": record["entry_hash"] if record else None,
+            "verified_at": committed_at,
+            "schema_version": "0.7",
+        }
+        self.record_provenance({"verification": result}, committed_at)
+        return result
+
     def history(self, subject_ref: str) -> list[dict]:
         out = []
         for entry in self.entries:
@@ -190,7 +277,13 @@ class LedgerStore:
                 out.append(copy.deepcopy(entry))
         return out
 
-    def checkpoint(self, validator_set: dict, private_keys: dict[str, Ed25519PrivateKey], created_at: str, previous_checkpoint_hash: str | None = None) -> dict:
+    def checkpoint(
+        self,
+        validator_set: dict,
+        private_keys: dict[str, Ed25519PrivateKey],
+        created_at: str,
+        previous_checkpoint_hash: str | None = None,
+    ) -> dict:
         if not self.entries:
             raise ValueError("empty ledger")
         unsigned = {
@@ -211,22 +304,36 @@ class LedgerStore:
             private = private_keys.get(member["actor_id"])
             if private is None:
                 continue
-            approvals.append({"actor_id": member["actor_id"], "key_id": member["key_id"], "algorithm": "ed25519", "signature": b64u(private.sign(message))})
+            approvals.append(
+                {
+                    "actor_id": member["actor_id"],
+                    "key_id": member["key_id"],
+                    "algorithm": "ed25519",
+                    "signature": b64u(private.sign(message)),
+                }
+            )
             if len(approvals) >= validator_set["quorum"]:
                 break
         if len(approvals) < validator_set["quorum"]:
             raise ValueError("validator quorum unavailable")
         checkpoint = {**unsigned, "approvals": approvals}
         checkpoint["checkpoint_hash"] = sha256_hex(checkpoint)
-        self.verify_checkpoint(checkpoint, validator_set)
-        atomic_text(self.root / "checkpoint.json", json.dumps(checkpoint, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+        self.verify_checkpoint(checkpoint, validator_set, self.entries)
+        atomic_text(
+            self.root / "checkpoint.json",
+            json.dumps(checkpoint, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        )
         return checkpoint
 
     @staticmethod
-    def verify_checkpoint(checkpoint: dict, validator_set: dict) -> None:
+    def verify_checkpoint(
+        checkpoint: dict,
+        validator_set: dict,
+        entries: list[dict] | None = None,
+    ) -> None:
         if validator_set["status"] != "active" or checkpoint["validator_set_id"] != validator_set["validator_set_id"]:
             raise ValueError("inactive/mismatched validator set")
-        if validator_set["quorum"] > len(validator_set["members"]):
+        if validator_set["quorum"] < 1 or validator_set["quorum"] > len(validator_set["members"]):
             raise ValueError("invalid quorum")
         if checkpoint["checkpoint_hash"] != sha256_hex(checkpoint_body(checkpoint)):
             raise ValueError("checkpoint hash mismatch")
@@ -238,9 +345,92 @@ class LedgerStore:
             if not member or member["key_id"] != approval["key_id"]:
                 continue
             try:
-                Ed25519PublicKey.from_public_bytes(b64u_decode(member["public_key"])).verify(b64u_decode(approval["signature"]), message)
+                Ed25519PublicKey.from_public_bytes(b64u_decode(member["public_key"])).verify(
+                    b64u_decode(approval["signature"]), message
+                )
                 valid.add(approval["actor_id"])
             except (ValueError, InvalidSignature):
                 continue
         if len(valid) < validator_set["quorum"]:
             raise ValueError("checkpoint is not final: validator quorum not met")
+
+        if entries is not None:
+            through = checkpoint["through_sequence"]
+            if checkpoint["entry_count"] != through:
+                raise ValueError("checkpoint entry_count/through_sequence mismatch")
+            if through < 1 or len(entries) < through:
+                raise ValueError("checkpoint ledger prefix unavailable")
+            prefix = entries[:through]
+            verify_entries(prefix, checkpoint["ledger_id"])
+            if prefix[-1]["sequence"] != through:
+                raise ValueError("checkpoint sequence mismatch")
+            root = merkle_root([item["entry_hash"] for item in prefix])
+            if root != checkpoint["merkle_root"]:
+                raise ValueError("checkpoint merkle root does not match ledger prefix")
+
+    def export_sync_bundle(self, checkpoint: dict, validator_set: dict) -> dict:
+        self.verify_checkpoint(checkpoint, validator_set, self.entries)
+        through = checkpoint["through_sequence"]
+        bundle = {
+            "ledger_id": self.ledger_id,
+            "entries": copy.deepcopy(self.entries[:through]),
+            "checkpoint": copy.deepcopy(checkpoint),
+            "validator_set": copy.deepcopy(validator_set),
+            "schema_version": "0.7",
+        }
+        bundle["bundle_hash"] = sha256_hex(bundle)
+        return bundle
+
+    @classmethod
+    def import_sync_bundle(
+        cls,
+        root: Path,
+        bundle: dict,
+        trusted_validator_set: dict,
+    ) -> "LedgerStore":
+        required = {"ledger_id", "entries", "checkpoint", "validator_set", "bundle_hash", "schema_version"}
+        if set(bundle) != required or bundle["schema_version"] != "0.7":
+            raise ValueError("invalid state sync bundle shape")
+        if bundle["bundle_hash"] != sha256_hex(sync_bundle_body(bundle)):
+            raise ValueError("state sync bundle hash mismatch")
+        if canonical_bytes(bundle["validator_set"]) != canonical_bytes(trusted_validator_set):
+            raise ValueError("state sync validator set is not locally trusted")
+
+        ledger_id = bundle["ledger_id"]
+        entries = copy.deepcopy(bundle["entries"])
+        checkpoint = bundle["checkpoint"]
+        if checkpoint["ledger_id"] != ledger_id:
+            raise ValueError("state sync ledger/checkpoint mismatch")
+        if len(entries) != checkpoint["through_sequence"]:
+            raise ValueError("state sync bundle must contain the exact finalized ledger prefix")
+        cls.verify_checkpoint(checkpoint, trusted_validator_set, entries)
+
+        root = Path(root)
+        ledger_path = root / "ledger.jsonl"
+        if ledger_path.exists():
+            local_entries = [
+                json.loads(line)
+                for line in ledger_path.read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            verify_entries(local_entries, ledger_id)
+            if len(local_entries) > len(entries):
+                raise ValueError("refusing state sync rollback over a longer local ledger")
+            for index, local_entry in enumerate(local_entries):
+                if local_entry["entry_hash"] != entries[index]["entry_hash"]:
+                    raise ValueError("state sync fork conflict")
+
+        atomic_text(
+            ledger_path,
+            "".join(
+                json.dumps(item, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+                for item in entries
+            ),
+        )
+        atomic_text(
+            root / "checkpoint.json",
+            json.dumps(checkpoint, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        )
+        store = cls(root, ledger_id)
+        store.verify_checkpoint(checkpoint, trusted_validator_set, store.entries)
+        return store
