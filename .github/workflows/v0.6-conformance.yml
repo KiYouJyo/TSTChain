@@ -8,6 +8,7 @@ on:
     paths:
       - "schemas/v0.6/**"
       - "tools/referencecity_gis_adapter.py"
+      - "tools/referencecity_s007_check.py"
       - "tools/v0_6_conformance.py"
       - "requirements-dev.txt"
       - ".github/workflows/v0.6-conformance.yml"
@@ -15,6 +16,7 @@ on:
     paths:
       - "schemas/v0.6/**"
       - "tools/referencecity_gis_adapter.py"
+      - "tools/referencecity_s007_check.py"
       - "tools/v0_6_conformance.py"
       - "requirements-dev.txt"
       - ".github/workflows/v0.6-conformance.yml"
@@ -49,3 +51,21 @@ jobs:
         run: python tools/v0_5_conformance.py
       - name: v0.6 conformance
         run: python tools/v0_6_conformance.py
+
+  referencecity-s007:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: KiYouJyo/ReferenceCity
+          path: ReferenceCity
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pip install -r ReferenceCity/requirements-dev.txt
+      - name: Build ReferenceCity and verify S007 through v0.6 GIS adapter
+        run: python tools/referencecity_s007_check.py --referencecity-root ReferenceCity
