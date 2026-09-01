@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.6:external-spatial-asset",
+  "title": "TST Chain ExternalSpatialAsset v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["asset_id", "source_system", "source_ref", "media_type", "content_digest", "canonicalization", "crs_ref", "schema_version"],
+  "properties": {
+    "asset_id": {"type": "string", "pattern": "^tst:external-asset:[A-Za-z0-9._~-]+$"},
+    "source_system": {"type": "string", "minLength": 1, "maxLength": 128},
+    "source_ref": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "media_type": {"type": "string", "minLength": 1, "maxLength": 128},
+    "content_digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "canonicalization": {"enum": ["RFC8785-JCS", "raw-bytes"]},
+    "crs_ref": {"type": "string", "minLength": 1, "maxLength": 128},
+    "snapshot_ref": {"type": ["string", "null"], "maxLength": 1024},
+    "schema_version": {"const": "0.6"}
+  }
+}
