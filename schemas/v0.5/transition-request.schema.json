@@ -1,0 +1,23 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:tstchain:schema:v0.5:transition-request",
+  "title":"TST Chain TransitionRequest v0.5",
+  "type":"object","additionalProperties":false,
+  "required":["request_id","workflow_id","instance_id","subject_ref","actor_ref","action","expected_version","occurred_at","payload_digest","authorization","document_refs","signature_refs","rule_evaluations","schema_version"],
+  "properties":{
+    "request_id":{"type":"string","pattern":"^tst:wf-request:[A-Za-z0-9._~-]+$"},
+    "workflow_id":{"type":"string","pattern":"^tst:workflow:[A-Za-z0-9._~-]+$"},
+    "instance_id":{"type":"string","pattern":"^tst:wf-instance:[A-Za-z0-9._~-]+$"},
+    "subject_ref":{"type":"string","minLength":1},
+    "actor_ref":{"type":"string","minLength":1},
+    "action":{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"},
+    "expected_version":{"anyOf":[{"type":"string","pattern":"^[1-9][0-9]*$"},{"type":"null"}]},
+    "occurred_at":{"type":"string","format":"date-time","pattern":"Z$"},
+    "payload_digest":{"type":"object","additionalProperties":false,"required":["algorithm","digest","canonicalization"],"properties":{"algorithm":{"const":"sha256"},"digest":{"type":"string","pattern":"^[0-9a-f]{64}$"},"canonicalization":{"type":"string","minLength":1}}},
+    "authorization":{"type":"object","additionalProperties":false,"required":["decision_ref","decision","granted_permissions"],"properties":{"decision_ref":{"type":"string","minLength":1},"decision":{"enum":["allow","deny"]},"granted_permissions":{"type":"array","uniqueItems":true,"items":{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"}}}},
+    "document_refs":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "signature_refs":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "rule_evaluations":{"type":"array","uniqueItems":true,"items":{"type":"object","additionalProperties":false,"required":["evaluation_ref","outcome"],"properties":{"evaluation_ref":{"type":"string","minLength":1},"outcome":{"enum":["pass","fail","indeterminate"]}}}},
+    "schema_version":{"const":"0.5"}
+  }
+}

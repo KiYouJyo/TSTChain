@@ -1,0 +1,14 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:tstchain:schema:v0.5:workflow-definition",
+  "title":"TST Chain WorkflowDefinition v0.5",
+  "type":"object","additionalProperties":false,
+  "required":["workflow_id","states","initial_state","transitions","schema_version"],
+  "properties":{
+    "workflow_id":{"type":"string","pattern":"^tst:workflow:[A-Za-z0-9._~-]+$"},
+    "states":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"}},
+    "initial_state":{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"},
+    "transitions":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"object","additionalProperties":false,"required":["transition_id","from_state","to_state","action","required_permissions","document_requirement","signature_required","rule_gate","version_effect","audit_event"],"properties":{"transition_id":{"type":"string","pattern":"^tst:wf-transition:[A-Za-z0-9._~-]+$"},"from_state":{"anyOf":[{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"},{"type":"null"}]},"to_state":{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"},"action":{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"},"required_permissions":{"type":"array","uniqueItems":true,"items":{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"}},"document_requirement":{"enum":["none","at_least_one"]},"signature_required":{"type":"boolean"},"rule_gate":{"enum":["none","pass_required"]},"version_effect":{"enum":["create","preserve","increment"]},"audit_event":{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"}}}},
+    "schema_version":{"const":"0.5"}
+  }
+}

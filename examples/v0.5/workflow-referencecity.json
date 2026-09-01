@@ -1,0 +1,15 @@
+{
+  "workflow_id":"tst:workflow:referencecity-plan-lifecycle",
+  "states":["draft","submitted","reviewed","approved","effective","amendment","superseded","withdrawn","rejected"],
+  "initial_state":"draft",
+  "transitions":[
+    {"transition_id":"tst:wf-transition:create","from_state":null,"to_state":"draft","action":"create_plan","required_permissions":["plan.create"],"document_requirement":"none","signature_required":false,"rule_gate":"none","version_effect":"create","audit_event":"create"},
+    {"transition_id":"tst:wf-transition:submit","from_state":"draft","to_state":"submitted","action":"submit_plan","required_permissions":["plan.submit"],"document_requirement":"at_least_one","signature_required":true,"rule_gate":"none","version_effect":"preserve","audit_event":"submit"},
+    {"transition_id":"tst:wf-transition:review","from_state":"submitted","to_state":"reviewed","action":"review_pass","required_permissions":["plan.review"],"document_requirement":"at_least_one","signature_required":true,"rule_gate":"none","version_effect":"preserve","audit_event":"review"},
+    {"transition_id":"tst:wf-transition:approve","from_state":"reviewed","to_state":"approved","action":"approve_plan","required_permissions":["plan.approve"],"document_requirement":"at_least_one","signature_required":true,"rule_gate":"none","version_effect":"preserve","audit_event":"approve"},
+    {"transition_id":"tst:wf-transition:activate","from_state":"approved","to_state":"effective","action":"activate_plan","required_permissions":["plan.activate"],"document_requirement":"at_least_one","signature_required":true,"rule_gate":"none","version_effect":"preserve","audit_event":"activate"},
+    {"transition_id":"tst:wf-transition:amend","from_state":"effective","to_state":"amendment","action":"open_amendment","required_permissions":["plan.amend"],"document_requirement":"none","signature_required":false,"rule_gate":"pass_required","version_effect":"increment","audit_event":"amend"},
+    {"transition_id":"tst:wf-transition:submit-amendment","from_state":"amendment","to_state":"submitted","action":"submit_amendment","required_permissions":["plan.submit"],"document_requirement":"at_least_one","signature_required":true,"rule_gate":"none","version_effect":"preserve","audit_event":"submit"}
+  ],
+  "schema_version":"0.5"
+}

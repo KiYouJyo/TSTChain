@@ -1,19 +1,19 @@
 {
-  "as_of_tstchain_version":"0.4",
+  "as_of_tstchain_version":"0.5",
   "benchmark":"ReferenceCity S001-S010 / protocol 0.1",
   "end_to_end_ready":false,
-  "status_definition":{"full":"scenario can execute end-to-end with persistent authoritative state","partial":"primary protocol verdict/model exists but workflow, external adapter, or persistent ledger is still missing","unsupported":"TST cannot yet produce the scenario's primary verdict"},
-  "summary":{"full":0,"partial":8,"unsupported":2},
+  "status_definition":{"full":"scenario can execute end-to-end with persistent authoritative state","partial":"primary protocol verdict/model exists but an external adapter or persistent ledger is still missing","unsupported":"TST cannot yet produce the scenario's primary verdict"},
+  "summary":{"full":0,"partial":10,"unsupported":0},
   "scenarios":[
-    {"scenario":"S001","name":"plan registration","status":"partial","available_foundation":["v0.1 SpatialEvent","v0.2 Authority","v0.4 PlanArtifact/PlanVersion"],"missing":["Workflow state engine","persistent ledger"],"target_versions":["v0.5","v0.7"]},
-    {"scenario":"S002","name":"authorized version update","status":"partial","available_foundation":["v0.2 Authority","v0.4 PlanVersion/Provenance"],"missing":["Workflow state engine","persistent ledger"],"target_versions":["v0.5","v0.7"]},
-    {"scenario":"S003","name":"review approval activation","status":"unsupported","available_foundation":["v0.2 Authority/Signature/Audit"],"missing":["Workflow state engine","persistent state/ledger"],"target_versions":["v0.5","v0.7"]},
-    {"scenario":"S004","name":"unauthorized modification","status":"partial","available_foundation":["v0.2 TST-AUTHZ/0.2","v0.2 AuditRecord"],"missing":["ReferenceCity authority mapping","state transaction boundary","persistent audit ledger"],"target_versions":["integration-v0.1","v0.5","v0.7"]},
+    {"scenario":"S001","name":"plan registration","status":"partial","available_foundation":["v0.2 Authority","v0.4 PlanArtifact/PlanVersion","v0.5 Workflow create transaction"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
+    {"scenario":"S002","name":"authorized version update","status":"partial","available_foundation":["v0.2 Authority","v0.4 Provenance","v0.5 Workflow version increment"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
+    {"scenario":"S003","name":"review approval activation","status":"partial","available_foundation":["v0.2 Authority/Signature","v0.5 Workflow review/approve/activate"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
+    {"scenario":"S004","name":"unauthorized modification","status":"partial","available_foundation":["v0.2 AuthorizationDecision","v0.5 Workflow authorization gate"],"missing":["persistent audit ledger"],"target_versions":["v0.7"]},
     {"scenario":"S005","name":"approved document tamper detection","status":"partial","available_foundation":["v0.1 Evidence digest","v0.2 AuditRecord","external canonicalization boundary"],"missing":["ledger-integrated evidence history"],"target_versions":["v0.7"]},
-    {"scenario":"S006","name":"planning constraint conflict","status":"partial","available_foundation":["v0.3 PlanningRule","v0.3 RuleEvaluationResult"],"missing":["workflow rejection integration","persistent ledger"],"target_versions":["v0.5","v0.7"]},
-    {"scenario":"S007","name":"controlled-boundary spatial conflict","status":"partial","available_foundation":["v0.3 spatial PlanningRule","v0.3 SpatialEvaluation interface"],"missing":["real GIS evaluator adapter","workflow rejection integration","persistent ledger"],"target_versions":["v0.6","v0.5","v0.7"]},
-    {"scenario":"S008","name":"missing required signature","status":"partial","available_foundation":["v0.2 Ed25519/signature verification","v0.2 authorization/audit"],"missing":["Workflow transition signature requirement","persistent state transaction"],"target_versions":["v0.5","v0.7"]},
-    {"scenario":"S009","name":"historical version verification","status":"partial","available_foundation":["v0.1 Evidence","v0.4 PlanVersion/Provenance","v0.4 HistoricalVersionVerification"],"missing":["historical ledger/checkpoint persistence"],"target_versions":["v0.7"]},
-    {"scenario":"S010","name":"optimistic concurrency version conflict","status":"unsupported","available_foundation":["v0.2 Authority/Audit","v0.4 PlanVersion"],"missing":["versioned Workflow transaction engine","atomic expected_version precondition","persistent ledger"],"target_versions":["v0.5","v0.7"]}
+    {"scenario":"S006","name":"planning constraint conflict","status":"partial","available_foundation":["v0.3 PlanningRule","v0.5 rule gate"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
+    {"scenario":"S007","name":"controlled-boundary spatial conflict","status":"partial","available_foundation":["v0.3 SpatialEvaluation interface","v0.3 PlanningRule","v0.5 rule gate"],"missing":["real GIS evaluator adapter","persistent ledger"],"target_versions":["v0.6","v0.7"]},
+    {"scenario":"S008","name":"missing required signature","status":"partial","available_foundation":["v0.2 signature verification","v0.5 required-signature gate"],"missing":["persistent state transaction"],"target_versions":["v0.7"]},
+    {"scenario":"S009","name":"historical version verification","status":"partial","available_foundation":["v0.4 HistoricalVersionVerification"],"missing":["historical ledger/checkpoint persistence"],"target_versions":["v0.7"]},
+    {"scenario":"S010","name":"optimistic concurrency version conflict","status":"partial","available_foundation":["v0.5 expected_version precondition","v0.5 VERSION_CONFLICT","v0.5 idempotency"],"missing":["persistent ledger atomicity"],"target_versions":["v0.7"]}
   ]
 }

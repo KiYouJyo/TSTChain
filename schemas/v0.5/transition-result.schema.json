@@ -1,0 +1,23 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:tstchain:schema:v0.5:transition-result",
+  "title":"TST Chain TransitionResult v0.5",
+  "type":"object","additionalProperties":false,
+  "required":["result_id","request_id","accepted","state_changed","previous_state","current_state","previous_version","current_version","error_code","semantic_code","audit_event","idempotent_replay","processed_at","schema_version"],
+  "properties":{
+    "result_id":{"type":"string","pattern":"^tst:wf-result:[A-Za-z0-9._~-]+$"},
+    "request_id":{"type":"string","pattern":"^tst:wf-request:[A-Za-z0-9._~-]+$"},
+    "accepted":{"type":"boolean"},
+    "state_changed":{"type":"boolean"},
+    "previous_state":{"type":["string","null"]},
+    "current_state":{"type":["string","null"]},
+    "previous_version":{"anyOf":[{"type":"string","pattern":"^[1-9][0-9]*$"},{"type":"null"}]},
+    "current_version":{"anyOf":[{"type":"string","pattern":"^[1-9][0-9]*$"},{"type":"null"}]},
+    "error_code":{"enum":["TST-WF-000","TST-WF-001","TST-WF-002","TST-WF-003","TST-WF-004","TST-WF-005","TST-WF-006","TST-WF-007"]},
+    "semantic_code":{"enum":["OK","UNAUTHORIZED","INVALID_STATE_TRANSITION","MISSING_DOCUMENT","MISSING_SIGNATURE","RULE_CONFLICT","VERSION_CONFLICT","REQUEST_ID_REUSE"]},
+    "audit_event":{"type":"string","pattern":"^[a-z][a-z0-9._-]{1,127}$"},
+    "idempotent_replay":{"type":"boolean"},
+    "processed_at":{"type":"string","format":"date-time","pattern":"Z$"},
+    "schema_version":{"const":"0.5"}
+  }
+}
