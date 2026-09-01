@@ -4,14 +4,19 @@ on:
   push:
     paths:
       - 'schemas/v0.7/**'
+      - 'examples/v0.7/**'
       - 'tools/v0_7_ledger.py'
       - 'tools/v0_7_conformance.py'
+      - 'tools/referencecity_ledger_adapter.py'
       - '.github/workflows/v0.7-conformance.yml'
   pull_request:
     paths:
       - 'schemas/v0.7/**'
+      - 'examples/v0.7/**'
       - 'tools/v0_7_ledger.py'
       - 'tools/v0_7_conformance.py'
+      - 'tools/referencecity_ledger_adapter.py'
+      - '.github/workflows/v0.7-conformance.yml'
   workflow_dispatch:
 
 jobs:
@@ -52,3 +57,34 @@ jobs:
         working-directory: tstchain
       - run: python tools/referencecity_integration_check.py
         working-directory: tstchain
+
+      # Build the implementation input in a separate directory. ReferenceCity's
+      # builder explicitly excludes expected/ Ground Truth from this bundle.
+      - name: Build isolated ReferenceCity benchmark input
+        run: python referencecity/tools/build_benchmark_input.py --output '${{ github.workspace }}/rc-benchmark-input'
+      - name: Assert Ground Truth isolation
+        shell: bash
+        run: |
+          test ! -e '${{ github.workspace }}/rc-benchmark-input/expected'
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('${{ github.workspace }}/rc-benchmark-input')
+          manifest = json.loads((root/'benchmark-input.json').read_text())
+          assert manifest['ground_truth_included'] is False
+          assert manifest['scenario_count'] == 10
+          print('ReferenceCity isolated input: PASS')
+          PY
+      - name: Run TSTChain ledger adapter without Ground Truth
+        working-directory: tstchain
+        run: >-
+          python tools/referencecity_ledger_adapter.py
+          --benchmark '${{ github.workspace }}/rc-benchmark-input'
+          --output '${{ github.workspace }}/rc-observed'
+          --ledger-root '${{ github.workspace }}/rc-ledgers'
+      - name: Score observed results with ReferenceCity evaluator
+        run: >-
+          python referencecity/tools/compare_observed.py
+          --observed '${{ github.workspace }}/rc-observed'
+          --report '${{ github.workspace }}/referencecity-score.json'
+      - name: Print benchmark score
+        run: cat '${{ github.workspace }}/referencecity-score.json'

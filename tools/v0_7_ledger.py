@@ -101,6 +101,10 @@ class LedgerStore:
         self.instances = {}
         self.request_records = {}
         for entry in self.entries:
+            if entry["entry_type"] == "state_seed":
+                instance = copy.deepcopy(entry["payload"]["instance"])
+                self.instances[instance["instance_id"]] = instance
+                continue
             if entry["entry_type"] not in {"workflow_commit", "workflow_rejection"}:
                 continue
             request = entry["payload"]["request"]
@@ -150,6 +154,15 @@ class LedgerStore:
         self.write_snapshot()
         return copy.deepcopy(entry)
 
+    def seed_instance(self, instance: dict, committed_at: str, source_ref: str) -> dict:
+        existing = self.instances.get(instance["instance_id"])
+        if existing is not None:
+            if existing != instance:
+                raise ValueError("conflicting state seed")
+            return copy.deepcopy(existing)
+        self.append("state_seed", {"instance": instance, "source_ref": source_ref}, committed_at)
+        return copy.deepcopy(self.instances[instance["instance_id"]])
+
     def commit_workflow(self, definition: dict, request: dict, processed_at: str) -> dict:
         engine = Engine(definition, list(self.instances.values()))
         engine.requests = copy.deepcopy(self.request_records)
@@ -163,9 +176,15 @@ class LedgerStore:
     def record_evidence(self, payload: dict, committed_at: str) -> dict:
         return self.append("evidence_record", payload, committed_at)
 
+    def record_provenance(self, payload: dict, committed_at: str) -> dict:
+        return self.append("provenance_record", payload, committed_at)
+
     def history(self, subject_ref: str) -> list[dict]:
         out = []
         for entry in self.entries:
+            if entry["entry_type"] == "state_seed" and entry["payload"]["instance"].get("subject_ref") == subject_ref:
+                out.append(copy.deepcopy(entry))
+                continue
             request = entry.get("payload", {}).get("request")
             if request and request.get("subject_ref") == subject_ref:
                 out.append(copy.deepcopy(entry))
