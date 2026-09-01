@@ -11,13 +11,12 @@ import hashlib
 import json
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import rfc8785
 import shapely
 from shapely.geometry import shape
-
-EVALUATED_AT = "2030-03-07T01:00:00Z"
 
 
 def load(path: Path):
@@ -26,6 +25,21 @@ def load(path: Path):
 
 def jcs_digest(value) -> str:
     return hashlib.sha256(rfc8785.dumps(value)).hexdigest()
+
+
+def resolve_evaluated_at(value: str | None) -> str:
+    """Return a verified UTC-Z timestamp, defaulting to the actual evaluation time."""
+    if value is None:
+        return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    if not value.endswith("Z"):
+        raise ValueError("evaluated_at must be an explicit UTC Z timestamp")
+    try:
+        parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+    except ValueError as exc:
+        raise ValueError("evaluated_at is not a valid ISO-8601 timestamp") from exc
+    if parsed.utcoffset() != timezone.utc.utcoffset(parsed):
+        raise ValueError("evaluated_at must be UTC")
+    return value
 
 
 def ensure_snapshot(referencecity_root: Path) -> Path:
@@ -68,7 +82,59 @@ def external_asset(asset_id: str, source_ref: str, digest: str, crs_ref: str, sn
     }
 
 
-def evaluate(referencecity_root: Path, subject_ref: str, constraint_ref: str, operation: str = "intersects") -> dict:
+def validate_geometry(geometry, label: str) -> None:
+    if geometry.is_empty:
+        raise ValueError(f"{label} geometry is empty")
+    if not geometry.is_valid:
+        raise ValueError(f"{label} geometry is invalid")
+
+
+def classify_relation(subject_geom, constraint_geom) -> str:
+    """Return a coarse observed relation independent of the requested predicate."""
+    if subject_geom.disjoint(constraint_geom):
+        return "disjoint"
+    if subject_geom.within(constraint_geom):
+        return "within"
+    if subject_geom.contains(constraint_geom):
+        return "contains"
+    return "intersects"
+
+
+def predicate_value(subject_geom, constraint_geom, operation: str) -> bool:
+    operations = {
+        "intersects": subject_geom.intersects,
+        "within": subject_geom.within,
+        "contains": subject_geom.contains,
+        "disjoint": subject_geom.disjoint,
+    }
+    try:
+        predicate = operations[operation]
+    except KeyError as exc:
+        raise ValueError(f"unsupported operation: {operation}") from exc
+    return bool(predicate(constraint_geom))
+
+
+def result_suffix(
+    subject_ref: str,
+    constraint_ref: str,
+    operation: str,
+    subject_digest: str,
+    constraint_digest: str,
+    evaluated_at: str,
+) -> str:
+    seed = "\0".join(
+        [subject_ref, constraint_ref, operation, subject_digest, constraint_digest, evaluated_at]
+    ).encode("utf-8")
+    return hashlib.sha256(seed).hexdigest()[:24]
+
+
+def evaluate(
+    referencecity_root: Path,
+    subject_ref: str,
+    constraint_ref: str,
+    operation: str = "intersects",
+    evaluated_at: str | None = None,
+) -> dict:
     generated = ensure_snapshot(referencecity_root)
     spatial = load(generated / "spatial-objects.json")
     planning = load(generated / "planning-objects.json")
@@ -79,17 +145,12 @@ def evaluate(referencecity_root: Path, subject_ref: str, constraint_ref: str, op
     constraint = find_by_id(planning, constraint_ref)
     subject_geom = shape(subject["geometry"])
     constraint_geom = shape(constraint["boundary_geometry"])
+    validate_geometry(subject_geom, "subject")
+    validate_geometry(constraint_geom, "constraint")
 
-    operations = {
-        "intersects": subject_geom.intersects(constraint_geom),
-        "within": subject_geom.within(constraint_geom),
-        "contains": subject_geom.contains(constraint_geom),
-        "disjoint": subject_geom.disjoint(constraint_geom),
-    }
-    if operation not in operations:
-        raise ValueError(f"unsupported operation: {operation}")
-    value = bool(operations[operation])
-    relation = operation if value else ("disjoint" if operation == "intersects" else "intersects")
+    evaluated_at = resolve_evaluated_at(evaluated_at)
+    value = predicate_value(subject_geom, constraint_geom, operation)
+    relation = classify_relation(subject_geom, constraint_geom)
     intersection_area = subject_geom.intersection(constraint_geom).area
     area_text = format(intersection_area, ".6f").rstrip("0").rstrip(".") or "0"
 
@@ -114,8 +175,16 @@ def evaluate(referencecity_root: Path, subject_ref: str, constraint_ref: str, op
     ]
     subject_digest = jcs_digest(subject["geometry"])
     constraint_digest = jcs_digest(constraint["boundary_geometry"])
+    suffix = result_suffix(
+        subject_ref,
+        constraint_ref,
+        operation,
+        subject_digest,
+        constraint_digest,
+        evaluated_at,
+    )
     adapter_result = {
-        "adapter_result_id": "tst:adapter-result:referencecity-s007",
+        "adapter_result_id": f"tst:adapter-result:referencecity-{suffix}",
         "operation": operation,
         "subject_ref": subject_ref,
         "constraint_ref": constraint_ref,
@@ -126,16 +195,16 @@ def evaluate(referencecity_root: Path, subject_ref: str, constraint_ref: str, op
         "source_assets": [a["asset_id"] for a in assets],
         "subject_geometry_digest": {"algorithm": "sha256", "digest": subject_digest, "canonicalization": "RFC8785-JCS"},
         "constraint_geometry_digest": {"algorithm": "sha256", "digest": constraint_digest, "canonicalization": "RFC8785-JCS"},
-        "evaluated_at": EVALUATED_AT,
+        "evaluated_at": evaluated_at,
         "schema_version": "0.6",
     }
     spatial_evaluation = {
-        "spatial_evaluation_id": "tst:spatial-evaluation:referencecity-s007",
+        "spatial_evaluation_id": f"tst:spatial-evaluation:referencecity-{suffix}",
         "subject_object_ref": subject_ref,
         "constraint_ref": constraint_ref,
         "relation": relation,
-        "evaluator_system": "tst-referencecity-gis-adapter/0.6",
-        "evaluated_at": EVALUATED_AT,
+        "evaluator_system": f"tst-referencecity-gis-adapter/0.6;shapely/{shapely.__version__}",
+        "evaluated_at": evaluated_at,
         "subject_geometry_digest": adapter_result["subject_geometry_digest"],
         "constraint_geometry_digest": adapter_result["constraint_geometry_digest"],
         "schema_version": "0.3",
@@ -149,9 +218,19 @@ def main() -> int:
     parser.add_argument("--subject", default="RC:PARCEL:000001")
     parser.add_argument("--constraint", default="RC:BOUNDARY:ECO001")
     parser.add_argument("--operation", default="intersects", choices=["intersects", "within", "contains", "disjoint"])
+    parser.add_argument(
+        "--evaluated-at",
+        help="Explicit UTC Z timestamp for deterministic fixtures; defaults to actual current UTC time.",
+    )
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    result = evaluate(args.referencecity_root.resolve(), args.subject, args.constraint, args.operation)
+    result = evaluate(
+        args.referencecity_root.resolve(),
+        args.subject,
+        args.constraint,
+        args.operation,
+        args.evaluated_at,
+    )
     payload = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
