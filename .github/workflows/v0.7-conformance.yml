@@ -6,20 +6,29 @@ on:
       - 'schemas/v0.7/**'
       - 'tools/v0_7_ledger.py'
       - 'tools/v0_7_conformance.py'
+      - 'tools/referencecity_v0_7_benchmark.py'
+      - 'integrations/referencecity/v0.1/capability-gap.json'
+      - 'ROADMAP.md'
       - '.github/workflows/v0.7-conformance.yml'
   pull_request:
     paths:
       - 'schemas/v0.7/**'
       - 'tools/v0_7_ledger.py'
       - 'tools/v0_7_conformance.py'
+      - 'tools/referencecity_v0_7_benchmark.py'
+      - 'integrations/referencecity/v0.1/capability-gap.json'
+      - 'ROADMAP.md'
+      - '.github/workflows/v0.7-conformance.yml'
   workflow_dispatch:
 
 jobs:
   conformance:
     strategy:
+      fail-fast: false
       matrix:
         python-version: ['3.11', '3.12', '3.13']
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,6 +58,9 @@ jobs:
         env:
           REFERENCECITY_ROOT: '${{ github.workspace }}/referencecity'
       - run: python tools/v0_7_conformance.py
+        working-directory: tstchain
+      - name: ReferenceCity S001-S010 persistent benchmark
+        run: python tools/referencecity_v0_7_benchmark.py --referencecity-root '${{ github.workspace }}/referencecity' --output benchmark-v0.7.json
         working-directory: tstchain
       - run: python tools/referencecity_integration_check.py
         working-directory: tstchain
