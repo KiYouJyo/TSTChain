@@ -1,0 +1,69 @@
+{
+  "rule_set_id": "tst:ruleset:reference-city-detailed-plan",
+  "version": "1.1.0",
+  "status": "draft",
+  "issued_by_actor_id": "tst:actor:reference-city-planning-authority",
+  "rule_refs": [
+    {
+      "rule_id": "tst:rule:reference-city-far",
+      "version": "1.1.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "e3ab4ac8559107de5aeaf84a44d359d3044e3779ab94105a37b19e3a262a8ff0"
+      }
+    },
+    {
+      "rule_id": "tst:rule:reference-city-height",
+      "version": "1.0.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "7717a0c21e1fc8448a9cde17483d7359eebb51be39b55a3aeca2bb0b3b4607b8"
+      }
+    },
+    {
+      "rule_id": "tst:rule:reference-city-landuse",
+      "version": "1.0.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "bbc98aa911706826a81fd3f104c9826d7bddba6d224b2d83eecee9a691bd9b8d"
+      }
+    },
+    {
+      "rule_id": "tst:rule:reference-city-protected",
+      "version": "1.0.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "1be2c2cbda56d4310e7e3032ad180685d9f1b6386e5cda5f227a1913ab7034c1"
+      }
+    },
+    {
+      "rule_id": "tst:rule:reference-city-ecoredline",
+      "version": "1.0.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "98d2248ac27b930fd87a6dbeb68689bb584294bad95da03744110983d9940fbf"
+      }
+    }
+  ],
+  "effective_from": "2026-01-01T00:00:00Z",
+  "effective_until": null,
+  "previous_version": {
+    "rule_set_id": "tst:ruleset:reference-city-detailed-plan",
+    "version": "1.0.0",
+    "content_digest": {
+      "algorithm": "sha256",
+      "digest": "eb19cf2a0606e2664bc0b96457ee462fda03a2e007d94256012b22cd9d30e96c"
+    }
+  },
+  "basis_refs": [
+    {
+      "ref_type": "plan_artifact",
+      "ref": "reference-city-detailed-plan-v1",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "1111111111111111111111111111111111111111111111111111111111111111"
+      }
+    }
+  ],
+  "schema_version": "0.3"
+}

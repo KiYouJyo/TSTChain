@@ -1,0 +1,77 @@
+{
+  "profile": "TST-PLANNING-RULE/0.3",
+  "rules": [
+    {
+      "path": "examples/v0.3/rule-far.json",
+      "expected_sha256": "67a0daf7ea86d5cf4d76617003d19c4f72d09b98a05d8c7a350de8355c57048d"
+    },
+    {
+      "path": "examples/v0.3/rule-height.json",
+      "expected_sha256": "7717a0c21e1fc8448a9cde17483d7359eebb51be39b55a3aeca2bb0b3b4607b8"
+    },
+    {
+      "path": "examples/v0.3/rule-landuse.json",
+      "expected_sha256": "bbc98aa911706826a81fd3f104c9826d7bddba6d224b2d83eecee9a691bd9b8d"
+    },
+    {
+      "path": "examples/v0.3/rule-protected.json",
+      "expected_sha256": "1be2c2cbda56d4310e7e3032ad180685d9f1b6386e5cda5f227a1913ab7034c1"
+    },
+    {
+      "path": "examples/v0.3/rule-ecoredline.json",
+      "expected_sha256": "98d2248ac27b930fd87a6dbeb68689bb584294bad95da03744110983d9940fbf"
+    }
+  ],
+  "draft_rule": {
+    "path": "examples/v0.3/rule-far-draft-v1.1.json",
+    "expected_sha256": "e3ab4ac8559107de5aeaf84a44d359d3044e3779ab94105a37b19e3a262a8ff0",
+    "supersedes_sha256": "67a0daf7ea86d5cf4d76617003d19c4f72d09b98a05d8c7a350de8355c57048d"
+  },
+  "rule_set": {
+    "path": "examples/v0.3/rule-set.json",
+    "expected_sha256": "eb19cf2a0606e2664bc0b96457ee462fda03a2e007d94256012b22cd9d30e96c"
+  },
+  "draft_rule_set": {
+    "path": "examples/v0.3/rule-set-draft-v1.1.json",
+    "expected_sha256": "0d081fe686290b4003f1fad3999357baea7fe29f1dedf5da82d450602e04c565",
+    "previous_sha256": "eb19cf2a0606e2664bc0b96457ee462fda03a2e007d94256012b22cd9d30e96c"
+  },
+  "exception": {
+    "path": "examples/v0.3/rule-exception-review.json",
+    "expected_sha256": "771bf34aa19a89a7e871c7a901b189cec95c6e6dc93460fc829aa67c306cfdc4"
+  },
+  "evaluation_request": {
+    "path": "examples/v0.3/evaluation-request.json",
+    "expected_sha256": "6326e7fef3453a4f3017f2b10aae14389f483f986fb7790126a9b668e67e4193"
+  },
+  "evaluation_result": {
+    "path": "examples/v0.3/evaluation-result.json",
+    "expected_sha256": "3e2b26745032c155e261ec3e7b04271276fead4942eb6ac2b56be7eea5ceb429"
+  },
+  "expected_statuses": {
+    "tst:rule:reference-city-far": "pass",
+    "tst:rule:reference-city-height": "review",
+    "tst:rule:reference-city-landuse": "pass",
+    "tst:rule:reference-city-protected": "pass",
+    "tst:rule:reference-city-ecoredline": "pass"
+  },
+  "canonical_decimal_valid": [
+    "0",
+    "2",
+    "2.5",
+    "0.25",
+    "-0.5",
+    "-12.75"
+  ],
+  "canonical_decimal_invalid": [
+    "-0",
+    "00",
+    "02.5",
+    "2.50",
+    "2.0",
+    "+2",
+    "2e0",
+    ".5",
+    "2."
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "evaluation_id": "tst:ruleeval:reference-city-a01-20260901",
+  "subject_object_id": "tst:object:reference-city-parcel-a01",
+  "rule_results": [
+    {
+      "rule_ref": {
+        "rule_id": "tst:rule:reference-city-far",
+        "version": "1.0.0",
+        "content_digest": {
+          "algorithm": "sha256",
+          "digest": "67a0daf7ea86d5cf4d76617003d19c4f72d09b98a05d8c7a350de8355c57048d"
+        }
+      },
+      "status": "pass",
+      "reason_code": "TST-RULE-000",
+      "observed_value": {
+        "type": "decimal",
+        "value": "2.3",
+        "unit": "ratio"
+      },
+      "applied_exception_id": null,
+      "evidence_refs": []
+    },
+    {
+      "rule_ref": {
+        "rule_id": "tst:rule:reference-city-height",
+        "version": "1.0.0",
+        "content_digest": {
+          "algorithm": "sha256",
+          "digest": "7717a0c21e1fc8448a9cde17483d7359eebb51be39b55a3aeca2bb0b3b4607b8"
+        }
+      },
+      "status": "review",
+      "reason_code": "TST-RULE-002",
+      "observed_value": {
+        "type": "decimal",
+        "value": "48",
+        "unit": "metre"
+      },
+      "applied_exception_id": "tst:exception:reference-city-height-review-a01",
+      "evidence_refs": []
+    },
+    {
+      "rule_ref": {
+        "rule_id": "tst:rule:reference-city-landuse",
+        "version": "1.0.0",
+        "content_digest": {
+          "algorithm": "sha256",
+          "digest": "bbc98aa911706826a81fd3f104c9826d7bddba6d224b2d83eecee9a691bd9b8d"
+        }
+      },
+      "status": "pass",
+      "reason_code": "TST-RULE-000",
+      "observed_value": {
+        "type": "string",
+        "value": "R2"
+      },
+      "applied_exception_id": null,
+      "evidence_refs": []
+    },
+    {
+      "rule_ref": {
+        "rule_id": "tst:rule:reference-city-protected",
+        "version": "1.0.0",
+        "content_digest": {
+          "algorithm": "sha256",
+          "digest": "1be2c2cbda56d4310e7e3032ad180685d9f1b6386e5cda5f227a1913ab7034c1"
+        }
+      },
+      "status": "pass",
+      "reason_code": "TST-RULE-000",
+      "observed_value": {
+        "type": "boolean",
+        "value": false
+      },
+      "applied_exception_id": null,
+      "evidence_refs": []
+    },
+    {
+      "rule_ref": {
+        "rule_id": "tst:rule:reference-city-ecoredline",
+        "version": "1.0.0",
+        "content_digest": {
+          "algorithm": "sha256",
+          "digest": "98d2248ac27b930fd87a6dbeb68689bb584294bad95da03744110983d9940fbf"
+        }
+      },
+      "status": "pass",
+      "reason_code": "TST-RULE-000",
+      "observed_value": {
+        "type": "boolean",
+        "value": true
+      },
+      "applied_exception_id": null,
+      "evidence_refs": [
+        "tst:evidence:reference-city-gis-check-a01"
+      ]
+    }
+  ],
+  "rule_set_ref": {
+    "rule_set_id": "tst:ruleset:reference-city-detailed-plan",
+    "version": "1.0.0",
+    "content_digest": {
+      "algorithm": "sha256",
+      "digest": "eb19cf2a0606e2664bc0b96457ee462fda03a2e007d94256012b22cd9d30e96c"
+    }
+  },
+  "engine": {
+    "engine_id": "tst.reference.scalar-gis",
+    "engine_version": "0.3.0",
+    "interface_profile": "TST-RULE-ENGINE/0.3"
+  },
+  "input_digest": {
+    "algorithm": "sha256",
+    "digest": "6326e7fef3453a4f3017f2b10aae14389f483f986fb7790126a9b668e67e4193"
+  },
+  "evaluated_at": "2026-09-01T00:00:01Z",
+  "schema_version": "0.3"
+}

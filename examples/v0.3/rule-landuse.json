@@ -1,0 +1,40 @@
+{
+  "rule_id": "tst:rule:reference-city-landuse",
+  "version": "1.0.0",
+  "rule_type": "enum_constraint",
+  "status": "active",
+  "issued_by_actor_id": "tst:actor:reference-city-planning-authority",
+  "scope": {
+    "global": false,
+    "jurisdiction_refs": [
+      "REFCITY"
+    ],
+    "object_types": [
+      "parcel"
+    ],
+    "object_ids": []
+  },
+  "expression": {
+    "kind": "enum_constraint",
+    "property_path": "planning.land_use",
+    "operator": "in",
+    "values": [
+      "R2",
+      "R3"
+    ]
+  },
+  "effective_from": "2026-01-01T00:00:00Z",
+  "effective_until": null,
+  "supersedes": null,
+  "basis_refs": [
+    {
+      "ref_type": "plan_artifact",
+      "ref": "reference-city-detailed-plan-v1",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "1111111111111111111111111111111111111111111111111111111111111111"
+      }
+    }
+  ],
+  "schema_version": "0.3"
+}

@@ -1,0 +1,31 @@
+{
+  "exception_id": "tst:exception:reference-city-height-review-a01",
+  "rule_ref": {
+    "rule_id": "tst:rule:reference-city-height",
+    "version": "1.0.0",
+    "content_digest": {
+      "algorithm": "sha256",
+      "digest": "7717a0c21e1fc8448a9cde17483d7359eebb51be39b55a3aeca2bb0b3b4607b8"
+    }
+  },
+  "subject_object_ids": [
+    "tst:object:reference-city-parcel-a01"
+  ],
+  "exception_type": "review_required",
+  "override_rule_ref": null,
+  "status": "active",
+  "issued_by_actor_id": "tst:actor:reference-city-planning-authority",
+  "valid_from": "2026-01-01T00:00:00Z",
+  "valid_until": "2027-12-31T23:59:59Z",
+  "basis_refs": [
+    {
+      "ref_type": "external",
+      "ref": "reference-city-design-review-case-a01",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "2222222222222222222222222222222222222222222222222222222222222222"
+      }
+    }
+  ],
+  "schema_version": "0.3"
+}

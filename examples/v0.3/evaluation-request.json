@@ -1,0 +1,91 @@
+{
+  "evaluation_id": "tst:ruleeval:reference-city-a01-20260901",
+  "subject_object_id": "tst:object:reference-city-parcel-a01",
+  "rule_refs": [
+    {
+      "rule_id": "tst:rule:reference-city-far",
+      "version": "1.0.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "67a0daf7ea86d5cf4d76617003d19c4f72d09b98a05d8c7a350de8355c57048d"
+      }
+    },
+    {
+      "rule_id": "tst:rule:reference-city-height",
+      "version": "1.0.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "7717a0c21e1fc8448a9cde17483d7359eebb51be39b55a3aeca2bb0b3b4607b8"
+      }
+    },
+    {
+      "rule_id": "tst:rule:reference-city-landuse",
+      "version": "1.0.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "bbc98aa911706826a81fd3f104c9826d7bddba6d224b2d83eecee9a691bd9b8d"
+      }
+    },
+    {
+      "rule_id": "tst:rule:reference-city-protected",
+      "version": "1.0.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "1be2c2cbda56d4310e7e3032ad180685d9f1b6386e5cda5f227a1913ab7034c1"
+      }
+    },
+    {
+      "rule_id": "tst:rule:reference-city-ecoredline",
+      "version": "1.0.0",
+      "content_digest": {
+        "algorithm": "sha256",
+        "digest": "98d2248ac27b930fd87a6dbeb68689bb584294bad95da03744110983d9940fbf"
+      }
+    }
+  ],
+  "rule_set_ref": {
+    "rule_set_id": "tst:ruleset:reference-city-detailed-plan",
+    "version": "1.0.0",
+    "content_digest": {
+      "algorithm": "sha256",
+      "digest": "eb19cf2a0606e2664bc0b96457ee462fda03a2e007d94256012b22cd9d30e96c"
+    }
+  },
+  "facts": {
+    "planning.floor_area_ratio": {
+      "type": "decimal",
+      "value": "2.3",
+      "unit": "ratio"
+    },
+    "planning.building_height": {
+      "type": "decimal",
+      "value": "48",
+      "unit": "metre"
+    },
+    "planning.land_use": {
+      "type": "string",
+      "value": "R2"
+    },
+    "constraints.protected_zone": {
+      "type": "boolean",
+      "value": false
+    }
+  },
+  "spatial_observations": [
+    {
+      "predicate": "disjoint",
+      "target_object_id": "tst:object:reference-city-ecological-redline-01",
+      "result": true,
+      "observed_distance": null,
+      "engine_evidence_ref": "tst:evidence:reference-city-gis-check-a01"
+    }
+  ],
+  "input_evidence_refs": [
+    "tst:evidence:reference-city-parcel-a01-state",
+    "tst:evidence:reference-city-gis-check-a01"
+  ],
+  "requested_at": "2026-09-01T00:00:00Z",
+  "schema_version": "0.3",
+  "jurisdiction_ref": "REFCITY",
+  "object_type": "parcel"
+}

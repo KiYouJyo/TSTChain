@@ -1,0 +1,289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.3:rule-evaluation-result",
+  "title": "TST Chain RuleEvaluationResult v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evaluation_id",
+    "subject_object_id",
+    "rule_results",
+    "rule_set_ref",
+    "engine",
+    "input_digest",
+    "evaluated_at",
+    "schema_version"
+  ],
+  "properties": {
+    "evaluation_id": {
+      "type": "string",
+      "pattern": "^tst:ruleeval:[a-z0-9][a-z0-9._:-]{2,119}$"
+    },
+    "subject_object_id": {
+      "type": "string",
+      "pattern": "^tst:object:[a-z0-9][a-z0-9._:-]{2,119}$"
+    },
+    "rule_results": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/ruleResult"
+      }
+    },
+    "rule_set_ref": {
+      "$ref": "#/$defs/ruleSetRef"
+    },
+    "engine": {
+      "$ref": "#/$defs/engine"
+    },
+    "input_digest": {
+      "$ref": "#/$defs/contentDigest"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "schema_version": {
+      "const": "0.3"
+    }
+  },
+  "$defs": {
+    "contentDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "digest"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "scalar": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "decimal"
+            },
+            "value": {
+              "type": "string",
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]*[1-9])?$",
+              "not": {
+                "const": "-0"
+              },
+              "description": "Canonical base-10 decimal: no exponent, no leading zeroes, no trailing fractional zeroes, and no -0."
+            },
+            "unit": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.-]{0,63}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "string"
+            },
+            "value": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "boolean"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "integer"
+            },
+            "value": {
+              "type": "integer"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "null"
+            },
+            "value": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "ruleRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "version",
+        "content_digest"
+      ],
+      "properties": {
+        "rule_id": {
+          "type": "string",
+          "pattern": "^tst:rule:[a-z0-9][a-z0-9._:-]{2,119}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "content_digest": {
+          "$ref": "#/$defs/contentDigest"
+        }
+      }
+    },
+    "ruleSetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_set_id",
+        "version",
+        "content_digest"
+      ],
+      "properties": {
+        "rule_set_id": {
+          "type": "string",
+          "pattern": "^tst:ruleset:[a-z0-9][a-z0-9._:-]{2,119}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "content_digest": {
+          "$ref": "#/$defs/contentDigest"
+        }
+      }
+    },
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine_id",
+        "engine_version",
+        "interface_profile"
+      ],
+      "properties": {
+        "engine_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "engine_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "interface_profile": {
+          "const": "TST-RULE-ENGINE/0.3"
+        }
+      }
+    },
+    "ruleResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_ref",
+        "status",
+        "reason_code",
+        "evidence_refs"
+      ],
+      "properties": {
+        "rule_ref": {
+          "$ref": "#/$defs/ruleRef"
+        },
+        "status": {
+          "enum": [
+            "pass",
+            "fail",
+            "review",
+            "not_applicable",
+            "error"
+          ]
+        },
+        "reason_code": {
+          "type": "string",
+          "pattern": "^TST-RULE-[0-9]{3}$"
+        },
+        "observed_value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/scalar"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "applied_exception_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^tst:exception:[a-z0-9][a-z0-9._:-]{2,119}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^tst:evidence:[a-z0-9][a-z0-9._:-]{2,119}$"
+          }
+        }
+      }
+    }
+  }
+}

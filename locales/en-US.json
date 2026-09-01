@@ -33,5 +33,20 @@
   "decision.allow": "Allow",
   "decision.deny": "Deny",
   "authority.permission": "Permission",
-  "authority.scope": "Authority Scope"
+  "authority.scope": "Authority Scope",
+  "rule.ruleSet": "Rule Set",
+  "rule.exception": "Rule Exception",
+  "rule.evaluation": "Rule Evaluation",
+  "rule.engine": "Rule Engine",
+  "rule.numericConstraint": "Numeric Constraint",
+  "rule.numericRange": "Numeric Range",
+  "rule.enumConstraint": "Enumeration Constraint",
+  "rule.booleanConstraint": "Boolean Constraint",
+  "rule.spatialConstraint": "Spatial Constraint",
+  "rule.pass": "Pass",
+  "rule.fail": "Fail",
+  "rule.review": "Review",
+  "rule.notApplicable": "Not Applicable",
+  "status.repealed": "Repealed",
+  "rule.basis": "Rule Basis"
 }

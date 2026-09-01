@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.3:rule-evaluation-request",
+  "title": "TST Chain RuleEvaluationRequest v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evaluation_id",
+    "subject_object_id",
+    "jurisdiction_ref",
+    "object_type",
+    "rule_refs",
+    "rule_set_ref",
+    "facts",
+    "spatial_observations",
+    "input_evidence_refs",
+    "requested_at",
+    "schema_version"
+  ],
+  "properties": {
+    "evaluation_id": {
+      "type": "string",
+      "pattern": "^tst:ruleeval:[a-z0-9][a-z0-9._:-]{2,119}$"
+    },
+    "subject_object_id": {
+      "type": "string",
+      "pattern": "^tst:object:[a-z0-9][a-z0-9._:-]{2,119}$"
+    },
+    "rule_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/ruleRef"
+      }
+    },
+    "rule_set_ref": {
+      "$ref": "#/$defs/ruleSetRef"
+    },
+    "facts": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/scalar"
+      }
+    },
+    "spatial_observations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/spatialObservation"
+      }
+    },
+    "input_evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^tst:evidence:[a-z0-9][a-z0-9._:-]{2,119}$"
+      }
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "schema_version": {
+      "const": "0.3"
+    },
+    "jurisdiction_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+    },
+    "object_type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
+    }
+  },
+  "$defs": {
+    "contentDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "digest"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "scalar": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "decimal"
+            },
+            "value": {
+              "type": "string",
+              "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]*[1-9])?$",
+              "not": {
+                "const": "-0"
+              },
+              "description": "Canonical base-10 decimal: no exponent, no leading zeroes, no trailing fractional zeroes, and no -0."
+            },
+            "unit": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.-]{0,63}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "string"
+            },
+            "value": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "boolean"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "integer"
+            },
+            "value": {
+              "type": "integer"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "null"
+            },
+            "value": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "ruleRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "version",
+        "content_digest"
+      ],
+      "properties": {
+        "rule_id": {
+          "type": "string",
+          "pattern": "^tst:rule:[a-z0-9][a-z0-9._:-]{2,119}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "content_digest": {
+          "$ref": "#/$defs/contentDigest"
+        }
+      }
+    },
+    "ruleSetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_set_id",
+        "version",
+        "content_digest"
+      ],
+      "properties": {
+        "rule_set_id": {
+          "type": "string",
+          "pattern": "^tst:ruleset:[a-z0-9][a-z0-9._:-]{2,119}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "content_digest": {
+          "$ref": "#/$defs/contentDigest"
+        }
+      }
+    },
+    "spatialObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predicate",
+        "target_object_id",
+        "result",
+        "engine_evidence_ref"
+      ],
+      "properties": {
+        "predicate": {
+          "enum": [
+            "intersects",
+            "disjoint",
+            "within",
+            "contains",
+            "touches",
+            "distance_lte",
+            "distance_gte"
+          ]
+        },
+        "target_object_id": {
+          "type": "string",
+          "pattern": "^tst:object:[a-z0-9][a-z0-9._:-]{2,119}$"
+        },
+        "result": {
+          "type": "boolean"
+        },
+        "observed_distance": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "unit"
+              ],
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]*[1-9])?$",
+                  "not": {
+                    "const": "-0"
+                  },
+                  "description": "Canonical base-10 decimal: no exponent, no leading zeroes, no trailing fractional zeroes, and no -0."
+                },
+                "unit": {
+                  "enum": [
+                    "metre",
+                    "kilometre"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "engine_evidence_ref": {
+          "type": "string",
+          "pattern": "^tst:evidence:[a-z0-9][a-z0-9._:-]{2,119}$"
+        }
+      }
+    }
+  }
+}

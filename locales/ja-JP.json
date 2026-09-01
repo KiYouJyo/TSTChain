@@ -33,5 +33,20 @@
   "decision.allow": "許可",
   "decision.deny": "拒否",
   "authority.permission": "権限",
-  "authority.scope": "権限範囲"
+  "authority.scope": "権限範囲",
+  "rule.ruleSet": "ルールセット",
+  "rule.exception": "ルール例外",
+  "rule.evaluation": "ルール検証",
+  "rule.engine": "ルールエンジン",
+  "rule.numericConstraint": "数値制約",
+  "rule.numericRange": "数値範囲",
+  "rule.enumConstraint": "列挙制約",
+  "rule.booleanConstraint": "真偽制約",
+  "rule.spatialConstraint": "空間制約",
+  "rule.pass": "適合",
+  "rule.fail": "不適合",
+  "rule.review": "人手審査",
+  "rule.notApplicable": "非該当",
+  "status.repealed": "廃止",
+  "rule.basis": "ルール根拠"
 }

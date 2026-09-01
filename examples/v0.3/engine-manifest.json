@@ -1,0 +1,20 @@
+{
+  "engine_id": "tst.reference.scalar-gis",
+  "engine_version": "0.3.0",
+  "interface_profile": "TST-RULE-ENGINE/0.3",
+  "supported_rule_types": [
+    "numeric_constraint",
+    "numeric_range",
+    "enum_constraint",
+    "boolean_constraint",
+    "spatial_constraint"
+  ],
+  "supported_input_profiles": [
+    "tst_facts",
+    "geojson_ref",
+    "ifc_ref",
+    "tim_ref"
+  ],
+  "deterministic": true,
+  "schema_version": "0.3"
+}

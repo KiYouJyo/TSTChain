@@ -33,5 +33,20 @@
   "decision.allow": "允许",
   "decision.deny": "拒绝",
   "authority.permission": "权限",
-  "authority.scope": "权责范围"
+  "authority.scope": "权责范围",
+  "rule.ruleSet": "规则集",
+  "rule.exception": "规则例外",
+  "rule.evaluation": "规则核验",
+  "rule.engine": "规则引擎",
+  "rule.numericConstraint": "数值约束",
+  "rule.numericRange": "数值范围",
+  "rule.enumConstraint": "枚举约束",
+  "rule.booleanConstraint": "布尔约束",
+  "rule.spatialConstraint": "空间约束",
+  "rule.pass": "通过",
+  "rule.fail": "不通过",
+  "rule.review": "转人工审查",
+  "rule.notApplicable": "不适用",
+  "status.repealed": "已废止",
+  "rule.basis": "规则依据"
 }
