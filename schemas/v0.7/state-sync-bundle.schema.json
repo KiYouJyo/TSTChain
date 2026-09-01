@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tstchain:schema:v0.7:state-sync-bundle",
+  "title": "TST Chain StateSyncBundle v0.7",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ledger_id", "entries", "checkpoint", "validator_set", "bundle_hash", "schema_version"],
+  "properties": {
+    "ledger_id": {"type": "string", "pattern": "^tst:ledger:[A-Za-z0-9._~-]+$"},
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "ledger-entry.schema.json"}
+    },
+    "checkpoint": {"$ref": "checkpoint.schema.json"},
+    "validator_set": {"$ref": "validator-set.schema.json"},
+    "bundle_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "schema_version": {"const": "0.7"}
+  }
+}
