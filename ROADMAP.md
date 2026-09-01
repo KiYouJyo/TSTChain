@@ -45,15 +45,22 @@
 
 目标：建立机器可读、可版本化、可追溯的规划规则模型。
 
-- [ ] `PlanningRule` 基础 Schema
-- [ ] 适用空间范围与对象范围
-- [ ] 数值指标、枚举条件、空间约束、引用依据
-- [ ] RuleSet 与版本关系
-- [ ] 生效、废止、替代与例外状态
-- [ ] Rule evaluation result schema
-- [ ] GIS/BIM 外部规则引擎接口
+- [x] `PlanningRule` 基础 Schema
+- [x] 适用空间范围与对象范围
+- [x] 数值指标、枚举条件、布尔条件、空间约束与引用依据
+- [x] `RuleSet` 与版本关系
+- [x] 生效、废止、替代、草案与显式 `RuleException` 模型
+- [x] `RuleEvaluationRequest` / `RuleEvaluationResult`
+- [x] `RuleEngineManifest` 与 `TST-RULE-ENGINE/0.3` GIS/TIM/BIM 外部规则引擎接口
+- [x] 规范十进制字符串，避免跨实现二进制浮点差异
+- [x] PASS / FAIL / REVIEW / NOT_APPLICABLE 结果语义与行政裁量边界
+- [x] 三语术语、合成示例、SHA-256 测试向量与 Python 3.11–3.13 CI
 
-**原则**：链负责证明规则版本、输入和结果；不替代依法应由行政主体作出的裁量。
+**原则**：链负责证明规则版本、输入、外部规则引擎身份和结果；不替代依法应由行政主体作出的裁量。空间几何运算继续由 GIS/TIM/BIM 等外部引擎承担，链上只保存规则声明、输入摘要、结果与证据关系。
+
+**验收标准**：PlanningRule / RuleSet / RuleException / Evaluation 对象在不同实现中生成一致 canonical hash；规范十进制正反例稳定；规则版本链与规则集完整性可校验；外部引擎输入与结果可追溯；需要裁量的超限情形能够进入 REVIEW 而非被机器自动形成行政结论。
+
+**v0.3 状态**：协议候选实现完成。继续以最小合成规划案例作为 conformance fixture，待 ReferenceCity 成熟后补充集成级空间规则测试。
 
 ## v0.4 — Provenance
 
