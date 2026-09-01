@@ -3,8 +3,9 @@
   "referencecity_repository": "KiYouJyo/ReferenceCity",
   "referencecity_protocol_version": "0.1",
   "referencecity_core_dataset_version": "0.1.0",
+  "referencecity_pin": "f810758d151a36747dbc7ccf11998f12d40bef4e",
   "referencecity_crs": "RC-SYNTHETIC-1",
-  "tstchain_current_protocol": "0.2",
+  "tstchain_current_protocol": "0.7",
   "canonicalization_boundary": {
     "tst_core_profile": "TST-C14N-JSON/0.1",
     "referencecity_external_content_profile": "RFC8785-JCS",
@@ -12,6 +13,15 @@
   },
   "ground_truth_policy": {
     "adapter_input_contains_ground_truth": false,
-    "adapter_must_not_read_expected_directory": true
+    "adapter_must_not_read_expected_directory": true,
+    "scoring_is_separate_process": true
+  },
+  "benchmark_validation": {
+    "input_builder": "ReferenceCity tools/build_benchmark_input.py",
+    "adapter": "tools/referencecity_ledger_adapter.py",
+    "scorer": "ReferenceCity tools/compare_observed.py",
+    "python_versions": ["3.11", "3.12", "3.13"],
+    "expected_scenarios": 10,
+    "required_score": "10/10"
   }
 }

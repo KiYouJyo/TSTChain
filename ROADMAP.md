@@ -16,43 +16,52 @@ PlanningRule / RuleSet / RuleEvaluation / SpatialEvaluation 已完成，S006/S00
 ## v0.4 — Provenance — 完成协议候选
 PlanArtifact / PlanVersion / ProvenanceEdge / HistoricalVersionVerification 已完成，S001/S002/S009 的版本和历史模型已建立。
 
-## ReferenceCity 验收基线
-截至 v0.6 GIS slice，S001–S010 仍为 **0 full / 10 partial / 0 unsupported**。所有场景的主协议判定均已具备，S007 已由真实 ReferenceCity geometry 驱动外部 GIS evaluator；`full` 仍要求 v0.7 的持久权威状态，因此现在不人为宣称端到端链 PASS。
-
-## v0.5 — Workflow — 协议候选实现完成
-- [x] WorkflowDefinition / states / transitions；
-- [x] WorkflowInstance / current state / current version；
-- [x] TransitionRequest / `expected_version` / request ID；
-- [x] v0.2 authorization/permission gate；
-- [x] required document / signature preconditions；
-- [x] v0.3 RuleEvaluationResult gate；
-- [x] optimistic concurrency / `VERSION_CONFLICT`；
-- [x] idempotent replay / `REQUEST_ID_REUSE`；
-- [x] all-preconditions-before-mutation 原子语义；
-- [x] ReferenceCity S001/S002/S003/S004/S006/S008/S010 protocol mappings；
-- [x] Python 3.11–3.13 conformance + v0.1–v0.4 regression。
+## v0.5 — Workflow — 完成协议候选
+WorkflowDefinition / Instance / TransitionRequest / TransitionResult、权限/文档/签名/规则前置条件、乐观并发、幂等和原子状态迁移已完成。
 
 ## v0.6 — Interoperability — GIS/GeoJSON slice 完成协议候选
-目标：建立通用的“数据不上链，证据与关系上链”输入层。首个 slice 已将 S007 从预注入空间关系证据升级为真实 ReferenceCity geometry 计算。
+建立“数据不上链，证据与关系上链”的外部空间输入层。ReferenceCity S007 已由真实生成 geometry 经 Shapely 计算产生空间证据并驱动 PlanningRule / Workflow。
 
-- [x] ExternalSpatialAsset / canonicalization profile
-- [x] GeoJSON / generated JSON geometry adapter
-- [ ] GeoPackage adapter contract
-- [x] `SpatialEvaluation` reference evaluator
-- [x] ReferenceCity S007 geometry → Shapely → PlanningRule → Workflow integration test
-- [x] RFC8785-JCS external ordered-JSON boundary regression
-- [ ] TIM / CSPON mapping profile
-- [ ] BIM / IFC reference profile
-- [ ] document / raster evidence descriptor
-- [ ] REST / OpenAPI gateway
+已完成：ExternalSpatialAsset、GeoJSON/generated JSON geometry adapter、SpatialEvaluation reference evaluator、RFC8785-JCS 外部 canonicalization 边界。
 
-**原则**：Shapely 只是参考适配器，不是协议依赖。生产系统可替换为 PostGIS、QGIS、ArcGIS 或其他 GIS 引擎，只要产生同一 v0.6 证据契约。
+后续互操作子项继续滚动进入 v0.8–v1.0：GeoPackage、TIM/CSPON、BIM/IFC、document/raster descriptor、REST/OpenAPI gateway。
 
-## v0.7 — Distributed Ledger Prototype
-Append-only ledger、Merkle commitment、Authority validator set、finality、snapshot/checkpoint/state sync、atomic transition + audit persistence，并真正运行 ReferenceCity S001–S010 evaluator。
+## ReferenceCity v0.1 验收基线 — v0.7 达成
+固定 ReferenceCity commit `f810758d151a36747dbc7ccf11998f12d40bef4e`。实现端只接收由 ReferenceCity `build_benchmark_input.py` 生成、明确 `ground_truth_included=false` 的隔离输入；TSTChain 生成 `observed/S001...S010` 后，再由 ReferenceCity 自己的 `compare_observed.py` 独立读取 Ground Truth 判分。
 
-## v0.8 — Hierarchical & Jurisdictional Scaling
-County/Domain → City → Province → National/Federation Root：partition、cross-domain proof、hierarchical checkpoint、selective replication、data-residency hooks。
+**当前结果：10 full / 0 partial / 0 unsupported；Python 3.11 / 3.12 / 3.13 均为 10/10，所有场景 mismatches=[]。**
+
+这里的 `full` 仅指该固定合成基准的端到端一致性通过；`production_ready=false`，不代表政府生产准入、法定效力、安全等级认证或真实涉密数据部署能力。
+
+## v0.7 — Distributed Ledger Prototype — 核心完成
+- [x] append-only ledger + per-entry hash chain
+- [x] workflow commit / rejection atomic audit persistence
+- [x] evidence / provenance record
+- [x] auditable `state_seed` for benchmark/bootstrap state
+- [x] disposable state snapshot + full ledger replay recovery
+- [x] Merkle checkpoint
+- [x] Authority validator set
+- [x] Ed25519 quorum-signed finality（reference profile 2/3）
+- [x] ReferenceCity S001–S010 isolated-input ledger adapter
+- [x] independent ReferenceCity evaluator 10/10 on Python 3.11–3.13
+- [x] native token / gas / mining dependency: NONE
+
+尚未把 v0.7 称为生产级分布式网络：多节点网络传输、成员变更、BFT fault model、远程状态同步和运维安全仍属于后续版本。
+
+## v0.8 — Hierarchical & Jurisdictional Scaling — 当前阶段
+目标：把单一 ReferenceCity 账本扩展成符合国土空间治理层级与数据驻留要求的分层分域可信网络。
+
+- [ ] Domain / Jurisdiction descriptor
+- [ ] County/Domain → City → Province → National/Federation Root hierarchy
+- [ ] ledger partition / namespace isolation
+- [ ] local authoritative state + upper-level commitment
+- [ ] cross-domain proof envelope
+- [ ] hierarchical checkpoint aggregation
+- [ ] selective replication policy
+- [ ] data-residency / disclosure hooks
+- [ ] validator-set inheritance / delegation profile
+- [ ] cross-jurisdiction verification reference implementation
+- [ ] ReferenceCity multi-domain synthetic fixture and conformance
 
 ## v0.9 — Knowledge Graph & Planning AI Foundation
 Spatial knowledge graph、Object–Rule–Event–Authority graph、provenance query、AI/RAG evidence package、可验证引用与规划问答。

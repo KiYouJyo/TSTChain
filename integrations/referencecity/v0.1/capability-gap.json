@@ -1,19 +1,34 @@
 {
-  "as_of_tstchain_version":"0.6",
-  "benchmark":"ReferenceCity S001-S010 / protocol 0.1",
-  "end_to_end_ready":false,
-  "status_definition":{"full":"scenario can execute end-to-end with persistent authoritative state","partial":"primary protocol verdict/model exists but an external adapter or persistent ledger is still missing","unsupported":"TST cannot yet produce the scenario's primary verdict"},
-  "summary":{"full":0,"partial":10,"unsupported":0},
-  "scenarios":[
-    {"scenario":"S001","name":"plan registration","status":"partial","available_foundation":["v0.2 Authority","v0.4 PlanArtifact/PlanVersion","v0.5 Workflow create transaction"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S002","name":"authorized version update","status":"partial","available_foundation":["v0.2 Authority","v0.4 Provenance","v0.5 Workflow version increment"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S003","name":"review approval activation","status":"partial","available_foundation":["v0.2 Authority/Signature","v0.5 Workflow review/approve/activate"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S004","name":"unauthorized modification","status":"partial","available_foundation":["v0.2 AuthorizationDecision","v0.5 Workflow authorization gate"],"missing":["persistent audit ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S005","name":"approved document tamper detection","status":"partial","available_foundation":["v0.1 Evidence digest","v0.2 AuditRecord","external canonicalization boundary"],"missing":["ledger-integrated evidence history"],"target_versions":["v0.7"]},
-    {"scenario":"S006","name":"planning constraint conflict","status":"partial","available_foundation":["v0.3 PlanningRule","v0.5 rule gate"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S007","name":"controlled-boundary spatial conflict","status":"partial","available_foundation":["v0.3 SpatialEvaluation","v0.3 PlanningRule","v0.5 rule gate","v0.6 ReferenceCity GIS adapter","v0.6 real geometry integration"],"missing":["persistent ledger"],"target_versions":["v0.7"]},
-    {"scenario":"S008","name":"missing required signature","status":"partial","available_foundation":["v0.2 signature verification","v0.5 required-signature gate"],"missing":["persistent state transaction"],"target_versions":["v0.7"]},
-    {"scenario":"S009","name":"historical version verification","status":"partial","available_foundation":["v0.4 HistoricalVersionVerification"],"missing":["historical ledger/checkpoint persistence"],"target_versions":["v0.7"]},
-    {"scenario":"S010","name":"optimistic concurrency version conflict","status":"partial","available_foundation":["v0.5 expected_version precondition","v0.5 VERSION_CONFLICT","v0.5 idempotency"],"missing":["persistent ledger atomicity"],"target_versions":["v0.7"]}
+  "as_of_tstchain_version": "0.7",
+  "benchmark": "ReferenceCity S001-S010 / protocol 0.1",
+  "referencecity_pin": "f810758d151a36747dbc7ccf11998f12d40bef4e",
+  "end_to_end_ready": true,
+  "production_ready": false,
+  "production_readiness_note": "Full means full conformance for the pinned synthetic ReferenceCity benchmark. It does not imply government production admission, statutory effect, operational security accreditation, or real-data deployment readiness.",
+  "status_definition": {
+    "full": "scenario executes end-to-end from isolated benchmark input through persistent authoritative ledger and matches independent ReferenceCity Ground Truth",
+    "partial": "primary protocol verdict/model exists but an external adapter or persistent ledger path is still missing",
+    "unsupported": "TST cannot yet produce the scenario's primary verdict"
+  },
+  "validation": {
+    "adapter_ground_truth_read": false,
+    "scorer": "ReferenceCity tools/compare_observed.py",
+    "python_versions": ["3.11", "3.12", "3.13"],
+    "passed": 10,
+    "total": 10,
+    "all_passed": true
+  },
+  "summary": {"full": 10, "partial": 0, "unsupported": 0},
+  "scenarios": [
+    {"scenario":"S001","name":"plan registration","status":"full","available_foundation":["v0.2 Authority","v0.4 PlanArtifact/PlanVersion","v0.5 Workflow create transaction","v0.7 append-only ledger/state replay"],"missing":[],"target_versions":[]},
+    {"scenario":"S002","name":"authorized version update","status":"full","available_foundation":["v0.2 Authority","v0.4 Provenance","v0.5 Workflow version increment","v0.7 persistent workflow commit"],"missing":[],"target_versions":[]},
+    {"scenario":"S003","name":"review approval activation","status":"full","available_foundation":["v0.2 Authority/Signature","v0.5 Workflow review/approve/activate","v0.7 state_seed + persistent audit"],"missing":[],"target_versions":[]},
+    {"scenario":"S004","name":"unauthorized modification","status":"full","available_foundation":["v0.2 AuthorizationDecision","v0.5 authorization gate","v0.7 persistent rejection audit"],"missing":[],"target_versions":[]},
+    {"scenario":"S005","name":"approved document tamper detection","status":"full","available_foundation":["v0.1 Evidence digest","v0.2 AuditRecord","v0.7 ledger-integrated evidence verification"],"missing":[],"target_versions":[]},
+    {"scenario":"S006","name":"planning constraint conflict","status":"full","available_foundation":["v0.3 PlanningRule","v0.5 rule gate","v0.7 farmland geometry rule + persistent rejection"],"missing":[],"target_versions":[]},
+    {"scenario":"S007","name":"controlled-boundary spatial conflict","status":"full","available_foundation":["v0.3 SpatialEvaluation","v0.5 rule gate","v0.6 real geometry evaluation","v0.7 spatial evidence + persistent rejection"],"missing":[],"target_versions":[]},
+    {"scenario":"S008","name":"missing required signature","status":"full","available_foundation":["v0.2 signature model","v0.5 required-signature gate","v0.7 state_seed + rejection audit"],"missing":[],"target_versions":[]},
+    {"scenario":"S009","name":"historical version verification","status":"full","available_foundation":["v0.4 HistoricalVersionVerification","v0.7 provenance record + ledger history"],"missing":[],"target_versions":[]},
+    {"scenario":"S010","name":"optimistic concurrency version conflict","status":"full","available_foundation":["v0.5 expected_version/idempotency","v0.7 authoritative seeded state + persistent VERSION_CONFLICT"],"missing":[],"target_versions":[]}
   ]
 }
