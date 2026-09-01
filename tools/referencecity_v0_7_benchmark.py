@@ -13,7 +13,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from referencecity_gis_adapter import evaluate as spatial_evaluate
-from v0_3_conformance import evaluate as rule_evaluate
+from v0_3_conformance import evaluate as rule_evaluate, validate as validate_v0_3
 from v0_5_conformance import req
 from v0_6_conformance import rule_request as spatial_rule_request
 from v0_6_conformance import workflow_request as project_workflow_request
@@ -52,6 +52,22 @@ def request_payload_digest(request: dict) -> str:
     if request["payload_hash"] != "sha256:" + digest:
         raise AssertionError(f"ReferenceCity request payload hash mismatch: {request['request_id']}")
     return digest
+
+
+def complete_rule_evaluation(raw: dict, request: dict, evaluation_id: str, evaluated_at: str) -> dict:
+    result = {
+        "evaluation_id": evaluation_id,
+        "request_id": request["request_id"],
+        "rule_set_id": request["rule_set_id"],
+        "outcome": raw["outcome"],
+        "evaluated_rule_refs": raw["evaluated_rule_refs"],
+        "violations": raw["violations"],
+        "evaluator_ref": "tst:reference-rule-evaluator:0.3",
+        "evaluated_at": evaluated_at,
+        "schema_version": "0.3",
+    }
+    validate_v0_3("rule-evaluation-result.schema.json", result)
+    return result
 
 
 def mapped_request(
@@ -260,10 +276,17 @@ def run(rc_root: Path, ledger_root: Path) -> dict:
     setup_to_state(store, plan_def, "bench-s006", "RC:PLAN:0001", "effective")
     q = rc_request(rc_root, "S006")
     request_payload_digest(q)
-    rule_eval = rule_evaluate(load(S006_REQUEST), [load(S006_RULE)])
+    s006_rule_request = load(S006_REQUEST)
+    raw_rule_eval = rule_evaluate(s006_rule_request, [load(S006_RULE)])
+    rule_eval = complete_rule_evaluation(
+        raw_rule_eval,
+        s006_rule_request,
+        "tst:rule-evaluation:referencecity-s006-runtime",
+        utc_z(q["occurred_at"]),
+    )
     if rule_eval["outcome"] != "fail" or not rule_eval["violations"]:
         raise AssertionError("S006 reference rule evaluator did not produce the expected conflict")
-    store.record_evidence({"rule_evaluation": rule_eval}, utc_z(q["occurred_at"]))
+    store.record_evidence({"rule_evaluation": rule_eval}, rule_eval["evaluated_at"])
     mapped = mapped_request(
         q, "bench-s006-conflict", "open_amendment", "tst:wf-instance:bench-s006", "plan.amend",
         rules=[{"evaluation_ref": rule_eval["evaluation_id"], "outcome": rule_eval["outcome"]}],
@@ -272,7 +295,7 @@ def run(rc_root: Path, ledger_root: Path) -> dict:
     farmland_rule = load(S006_RULE)
     conflict = {
         "conflict_type": "farmland_control_conflict",
-        "target_id": load(S006_REQUEST)["subject_object_ref"],
+        "target_id": s006_rule_request["subject_object_ref"],
         "constraint_id": farmland_rule["scope"]["spatial_constraint_refs"][0],
         "severity": "ERROR",
     }
@@ -296,7 +319,13 @@ def run(rc_root: Path, ledger_root: Path) -> dict:
         adapter["subject_ref"], spatial["spatial_evaluation"]["relation"],
         spatial["spatial_evaluation"]["spatial_evaluation_id"], digest,
     )
-    rule_eval = rule_evaluate(rr, [load(S007_RULE)])
+    raw_rule_eval = rule_evaluate(rr, [load(S007_RULE)])
+    rule_eval = complete_rule_evaluation(
+        raw_rule_eval,
+        rr,
+        "tst:rule-evaluation:referencecity-s007-runtime",
+        evaluated_at,
+    )
     if rule_eval["outcome"] != "fail":
         raise AssertionError("S007 ecological rule did not fail")
     store.record_evidence({"spatial_adapter_result": adapter, "spatial_evaluation": spatial["spatial_evaluation"], "rule_evaluation": rule_eval}, evaluated_at)
